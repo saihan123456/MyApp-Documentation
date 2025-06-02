@@ -1,10 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthCheck from '../../components/auth-check';
 import Navbar from '../../components/navbar';
+import dynamic from 'next/dynamic';
+import { marked } from 'marked';
+
+// Import the editor dynamically to avoid SSR issues
+const MdEditor = dynamic(
+  () => import('react-markdown-editor-lite'),
+  { ssr: false }
+);
+
+// Import the editor styles
+import 'react-markdown-editor-lite/lib/index.css';
 
 export default function NewDocumentPage() {
   const router = useRouter();
@@ -14,6 +25,16 @@ export default function NewDocumentPage() {
   const [published, setPublished] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Handle editor change
+  const handleEditorChange = ({ html, text }) => {
+    setContent(text);
+  };
+
+  // Markdown parser function
+  const renderHTML = (text) => {
+    return marked(text);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,15 +140,14 @@ export default function NewDocumentPage() {
             
             <div className="form-group">
               <label htmlFor="content">Content</label>
-              <textarea
+              <MdEditor
                 id="content"
-                className="form-control"
+                style={{ height: '500px' }}
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                renderHTML={renderHTML}
+                onChange={handleEditorChange}
                 disabled={isSubmitting}
-                required
-                rows={15}
-                style={{ fontFamily: 'monospace' }}
+                placeholder="Write your content here..."
               />
               <small style={{ color: 'var(--dark-gray)' }}>
                 Supports Markdown formatting

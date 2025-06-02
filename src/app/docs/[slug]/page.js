@@ -2,6 +2,20 @@ import { notFound } from 'next/navigation';
 import Navbar from '../../components/navbar';
 import Link from 'next/link';
 import db from '@/app/lib/db';
+import { marked } from 'marked';
+import '@/app/styles/markdown.css';
+
+// Configure marked options once at module level
+marked.setOptions({
+  breaks: true,        // Add 'br' on single line breaks
+  gfm: true,          // GitHub Flavored Markdown
+  headerIds: true,    // Add IDs to headers for linking
+  mangle: false,      // Don't escape HTML
+  pedantic: false,    // Conform to markdown.pl
+  sanitize: false,    // Allow HTML
+  smartLists: true,   // Use smarter list behavior
+  smartypants: true,  // Use smart punctuation
+});
 
 // This function generates static params for all published documents
 export async function generateStaticParams() {
@@ -94,12 +108,12 @@ export default async function DocumentPage({ params }) {
               <p>Last updated: {new Date(document.updated_at).toLocaleDateString()}</p>
             </div>
             
-            {/* Render the document content - in a real app, you might use a markdown renderer */}
-            <div style={{ lineHeight: '1.6' }}>
-              {document.content.split('\n').map((paragraph, index) => (
-                <p key={index} style={{ marginBottom: '1rem' }}>{paragraph}</p>
-              ))}
-            </div>
+            {/* Render the document content with markdown */}
+            <div 
+              style={{ lineHeight: '1.6' }}
+              className="markdown-content"
+              dangerouslySetInnerHTML={{ __html: marked(document.content || '') }}
+            />
           </div>
         </div>
       </div>
