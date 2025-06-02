@@ -2,11 +2,33 @@
 
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [language, setLanguage] = useState('en'); // Default language is English
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+  
+  const toggleLanguageDropdown = () => {
+    setShowLanguageDropdown(!showLanguageDropdown);
+  };
+  
+  const selectLanguage = (lang) => {
+    setLanguage(lang);
+    setShowLanguageDropdown(false);
+    // Language logic will be implemented later
+  };
   
   return (
     <nav style={{
@@ -30,18 +52,114 @@ export default function Navbar() {
           </Link>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/" style={{
-            color: 'white',
-            padding: '0.5rem',
-            fontWeight: pathname === '/' ? 'bold' : 'normal',
-            borderBottom: pathname === '/' ? '2px solid white' : 'none',
-            textDecoration: 'none',
-          }}>
-            Home
-          </Link>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {/* Search bar with integrated magnifier icon */}
+          <form onSubmit={handleSearch} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search documents..."
+              style={{
+                padding: '0.5rem 2.5rem 0.5rem 0.75rem',
+                borderRadius: '4px',
+                border: 'none',
+                width: '200px',
+                fontSize: '0.9rem',
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                position: 'absolute',
+                right: '8px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0',
+                color: 'var(--dark-gray)',
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </form>
           
-          {status === 'authenticated' ? (
+          {/* Language selector dropdown */}
+          <div style={{ position: 'relative' }}>
+            <button 
+              onClick={toggleLanguageDropdown}
+              style={{
+                background: 'none',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '4px',
+                color: 'white',
+                cursor: 'pointer',
+                padding: '0.4rem 0.6rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              {language === 'en' ? '🇺🇸 English' : '🇯🇵 日本語'}
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            
+            {showLanguageDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                marginTop: '0.3rem',
+                zIndex: 10,
+                overflow: 'hidden',
+                width: '140px',
+              }}>
+                <button 
+                  onClick={() => selectLanguage('en')}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '0.6rem 1rem',
+                    border: 'none',
+                    borderBottom: '1px solid #eee',
+                    backgroundColor: language === 'en' ? '#f5f5f5' : 'white',
+                    cursor: 'pointer',
+                  }}
+                >
+                  🇺🇸 English
+                </button>
+                <button 
+                  onClick={() => selectLanguage('ja')}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '0.6rem 1rem',
+                    border: 'none',
+                    backgroundColor: language === 'ja' ? '#f5f5f5' : 'white',
+                    cursor: 'pointer',
+                  }}
+                >
+                  🇯🇵 日本語
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* Admin and authentication links - only shown when authenticated */}
+          {status === 'authenticated' && (
             <>
               <Link href="/admin" style={{
                 color: 'white',
@@ -66,15 +184,6 @@ export default function Navbar() {
                 Logout
               </button>
             </>
-          ) : (
-            <Link href="/login" style={{
-              color: 'white',
-              padding: '0.5rem',
-              fontWeight: pathname === '/login' ? 'bold' : 'normal',
-              borderBottom: pathname === '/login' ? '2px solid white' : 'none',
-            }}>
-              Login
-            </Link>
           )}
         </div>
       </div>

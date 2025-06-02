@@ -135,7 +135,6 @@ export default function AdminDashboard() {
           <p>Welcome, {session?.user?.name || session?.user?.username || 'Admin'}</p>
           
           <div style={{ marginTop: '2rem' }}>
-            <h2>Documentation Management</h2>
             
             <div style={{ 
               display: 'grid', 

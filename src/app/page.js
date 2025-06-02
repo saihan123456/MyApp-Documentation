@@ -138,19 +138,14 @@ export default async function Home() {
         <div className="container">
           <div style={{ 
             display: 'flex', 
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1rem',
           }}>
-            <div>
+            <div style={{ textAlign: 'center' }}>
               <h3 style={{ marginBottom: '0.5rem' }}>MyApp Docs</h3>
               <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>© 2025 MyApp. All rights reserved.</p>
-            </div>
-            <div>
-              <Link href="/" style={{ color: 'white', marginRight: '1rem' }}>Home</Link>
-              <Link href="/docs" style={{ color: 'white', marginRight: '1rem' }}>Documentation</Link>
-              <Link href="/login" style={{ color: 'white' }}>Admin</Link>
             </div>
           </div>
         </div>
