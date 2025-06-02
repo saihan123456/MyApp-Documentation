@@ -36,6 +36,7 @@ export default function Navbar() {
             padding: '0.5rem',
             fontWeight: pathname === '/' ? 'bold' : 'normal',
             borderBottom: pathname === '/' ? '2px solid white' : 'none',
+            textDecoration: 'none',
           }}>
             Home
           </Link>
@@ -47,6 +48,7 @@ export default function Navbar() {
                 padding: '0.5rem',
                 fontWeight: pathname?.startsWith('/admin') ? 'bold' : 'normal',
                 borderBottom: pathname?.startsWith('/admin') ? '2px solid white' : 'none',
+                textDecoration: 'none',
               }}>
                 Admin
               </Link>

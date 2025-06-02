@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "node scripts/seed-db.js",
+    "seed:reset": "node scripts/seed-db.js --reset"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

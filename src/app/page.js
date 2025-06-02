@@ -1,20 +1,39 @@
 import Link from 'next/link';
 import Navbar from './components/navbar';
+import db from './lib/db';
 
-export default function Home() {
-  // documentation sections
-  const documentSections = [
-    {
-      title: 'Docs',
-      description: 'See full documentation',
-      slug: 'getting-started',
-    },
-    {
-      title: 'FAQ',
-      description: 'Frequently Asked Questions',
-      slug: 'faq',
-    }
-  ];
+// Function to fetch the first three documents from the database
+async function getTopThreeDocuments() {
+  try {
+    return db.prepare('SELECT title, slug, content FROM docs WHERE published = 1 ORDER BY created_at ASC LIMIT 3').all();
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  // Fetch the first three documents from the database
+  const documentSections = await getTopThreeDocuments();
+  
+  // If no documents are found, provide a fallback
+  if (documentSections.length === 0) {
+    documentSections.push({
+      title: 'Getting Started',
+      description: 'No documents found. Please seed the database.',
+      slug: 'getting-started'
+    });
+  }
+  
+  // Add descriptions if they don't exist in the database
+  const processedDocuments = documentSections.map(doc => ({
+    ...doc,
+    // Create a description from the content if it doesn't exist
+    description: doc.description || (doc.content ? 
+      // Extract first 100 characters from content as description
+      doc.content.replace(/[#*_]/g, '').substring(0, 100) + '...' : 
+      'View this document')
+  }));
 
   return (
     <div>
@@ -47,7 +66,7 @@ export default function Home() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
             gap: '2rem'
           }}>
-            {documentSections.map((section) => (
+            {processedDocuments.map((section) => (
               <div key={section.slug} style={{ 
                 backgroundColor: 'white',
                 borderRadius: '8px',
