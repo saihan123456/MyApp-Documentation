@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import AuthCheck from '../components/auth-check';
 import Navbar from '../components/navbar';
 import Link from 'next/link';
+import Pagination from '../components/pagination';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -243,96 +244,14 @@ export default function AdminDashboard() {
                   </table>
                 </div>
                 
-                {/* Pagination - Scalable approach */}
+                {/* Pagination */}
                 {totalPages > 1 && (
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      {/* Previous button */}
-                      <button
-                        onClick={() => paginate(Math.max(1, currentPage - 1))}
-                        disabled={currentPage === 1}
-                        style={{
-                          padding: '0.5rem 0.75rem',
-                          border: '1px solid var(--light-gray)',
-                          borderRadius: '4px',
-                          backgroundColor: 'white',
-                          color: currentPage === 1 ? '#ccc' : 'var(--dark-gray)',
-                          cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                        }}
-                      >
-                        &laquo;
-                      </button>
-                      
-                      {/* Dynamic page buttons */}
-                      {(() => {
-                        // Always show first page, last page, current page, and 1 page before and after current
-                        const pageNumbers = [];
-                        const pagesToShow = new Set();
-                        
-                        // Always add first page
-                        pagesToShow.add(1);
-                        
-                        // Always add last page
-                        pagesToShow.add(totalPages);
-                        
-                        // Add current page and 1 page before and after
-                        for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-                          pagesToShow.add(i);
-                        }
-                        
-                        // Convert to array and sort
-                        const sortedPages = Array.from(pagesToShow).sort((a, b) => a - b);
-                        
-                        // Add the page numbers with ellipses
-                        sortedPages.forEach((pageNum, index) => {
-                          // Add ellipsis if there's a gap
-                          if (index > 0 && pageNum > sortedPages[index - 1] + 1) {
-                            pageNumbers.push(
-                              <span key={`ellipsis-${pageNum}`} style={{ padding: '0.5rem 0.25rem' }}>
-                                ...
-                              </span>
-                            );
-                          }
-                          
-                          // Add the page button
-                          pageNumbers.push(
-                            <button
-                              key={pageNum}
-                              onClick={() => paginate(pageNum)}
-                              style={{
-                                padding: '0.5rem 0.75rem',
-                                border: '1px solid var(--light-gray)',
-                                borderRadius: '4px',
-                                backgroundColor: currentPage === pageNum ? 'var(--primary-color)' : 'white',
-                                color: currentPage === pageNum ? 'white' : 'var(--dark-gray)',
-                                cursor: 'pointer',
-                                minWidth: '2.5rem',
-                              }}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        });
-                        
-                        return pageNumbers;
-                      })()} 
-                      
-                      {/* Next button */}
-                      <button
-                        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                        disabled={currentPage === totalPages}
-                        style={{
-                          padding: '0.5rem 0.75rem',
-                          border: '1px solid var(--light-gray)',
-                          borderRadius: '4px',
-                          backgroundColor: 'white',
-                          color: currentPage === totalPages ? '#ccc' : 'var(--dark-gray)',
-                          cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                        }}
-                      >
-                        &raquo;
-                      </button>
-                    </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={paginate}
+                    />
                   </div>
                 )}
               </>

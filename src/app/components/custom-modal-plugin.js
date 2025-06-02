@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PluginComponent } from 'react-markdown-editor-lite';
 import styles from './custom-modal-plugin.module.css';
+import Pagination from './pagination';
 
 // Modal component
 const Modal = ({ isOpen, onClose, children }) => {
@@ -110,10 +111,20 @@ const ImageGallery = ({ images, selectedImage, onSelectImage, onDeleteImage, loa
 // File Upload component
 const FileUpload = ({ onUpload, uploading }) => {
   const fileInputRef = useRef(null);
+  const [error, setError] = useState('');
   
   const handleFileChange = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
+      // Check if the number of files exceeds the maximum limit
+      if (files.length > 5) {
+        setError('You can only upload up to 5 files at once');
+        // Reset the input value
+        e.target.value = null;
+        return;
+      }
+      
+      setError(''); // Clear any previous errors
       onUpload(files);
       // Reset the input value so the same file can be uploaded again if needed
       e.target.value = null;
@@ -130,6 +141,7 @@ const FileUpload = ({ onUpload, uploading }) => {
   
   return (
     <div className={styles.fileUpload}>
+      {error && <div className={styles.error}>{error}</div>}
       <input 
         type="file" 
         ref={fileInputRef}
@@ -144,8 +156,9 @@ const FileUpload = ({ onUpload, uploading }) => {
         onClick={handleUploadClick}
         disabled={uploading}
       >
-        {uploading ? 'Uploading...' : 'Upload Images'}
+        {uploading ? 'Uploading...' : 'Upload Images (Max 5)'}
       </button>
+      <div className={styles.helpText}>Maximum 5 files per upload</div>
     </div>
   );
 };
@@ -178,12 +191,13 @@ class CustomModalPlugin extends PluginComponent {
     this.handleImageDelete = this.handleImageDelete.bind(this);
     this.handleImageSelect = this.handleImageSelect.bind(this);
     this.insertSelectedImage = this.insertSelectedImage.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
   }
   
   async fetchImages() {
     try {
       this.setState({ loading: true, error: null });
-      const response = await fetch(`/api/images?page=${this.state.page}&limit=20`);
+      const response = await fetch(`/api/images?page=${this.state.page}&limit=12`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch images');
@@ -204,9 +218,22 @@ class CustomModalPlugin extends PluginComponent {
     }
   }
   
+  handlePageChange(newPage) {
+    this.setState({ page: newPage }, this.fetchImages);
+  }
+  
   async handleImageUpload(files) {
     try {
       this.setState({ uploading: true, error: null });
+      
+      // Check if the number of files exceeds the maximum limit
+      if (files.length > 5) {
+        this.setState({
+          error: 'You can only upload up to 5 files at once',
+          uploading: false
+        });
+        return;
+      }
       
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
@@ -312,6 +339,13 @@ class CustomModalPlugin extends PluginComponent {
         </span>
         
         <Modal isOpen={isModalOpen} onClose={this.closeModal}>
+          {uploading && (
+            <div className={styles.loadingOverlay}>
+              <div className={styles.loadingSpinner}></div>
+              <div className={styles.loadingText}>Uploading images...</div>
+            </div>
+          )}
+          
           <h4>Image Manager</h4>
           
           {error && (
@@ -333,17 +367,27 @@ class CustomModalPlugin extends PluginComponent {
             loading={loading}
           />
           
+          {!loading && images.length > 0 && (
+            <Pagination
+              currentPage={this.state.page}
+              totalPages={this.state.totalPages}
+              onPageChange={this.handlePageChange}
+              className={styles.imagePagination}
+            />
+          )}
+          
           <div className={styles.modalActions}>
             <button 
               className={styles.insertButton}
               onClick={this.insertSelectedImage}
-              disabled={!selectedImage}
+              disabled={!selectedImage || uploading}
             >
               Insert Selected Image
             </button>
             <button 
               className={styles.cancelButton}
               onClick={this.closeModal}
+              disabled={uploading}
             >
               Cancel
             </button>
