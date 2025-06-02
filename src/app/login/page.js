@@ -2,23 +2,29 @@
 
 import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Get the callback URL from the URL parameters
+  const callbackUrl = searchParams.get('callbackUrl') || '/admin';
 
-  // Redirect to home if already authenticated
+  // Redirect to callback URL if already authenticated
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push('/');
+      // If there's a callback URL in the query parameters, use it
+      // Otherwise default to home page
+      router.push(callbackUrl);
     }
-  }, [status, router]);
+  }, [status, router, callbackUrl]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,8 +50,8 @@ export default function LoginPage() {
         return;
       }
       
-      // Redirect to admin dashboard on successful login
-      router.push('/admin');
+      // Redirect to the callback URL or admin dashboard on successful login
+      router.push(callbackUrl);
       router.refresh();
     } catch (error) {
       console.error('Login error:', error);

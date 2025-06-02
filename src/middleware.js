@@ -16,7 +16,8 @@ export async function middleware(request) {
   // If it's an admin route and no token exists, redirect to login
   if (isAdminRoute && !token) {
     const url = new URL('/login', request.url);
-    url.searchParams.set('callbackUrl', encodeURI(pathname));
+    // Use the full pathname to ensure proper redirection after login
+    url.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(url);
   }
   
