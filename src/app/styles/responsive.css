@@ -1,0 +1,33 @@
+/* Responsive styles for documentation sidebar */
+
+/* Mobile styles (up to 767px) */
+@media (max-width: 767px) {
+  .docs-container {
+    flex-direction: column !important;
+  }
+  
+  .docs-content {
+    width: 100% !important;
+    padding-left: 0 !important;
+  }
+}
+
+/* Tablet styles (768px to 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .docs-container {
+    gap: 1.5rem !important;
+  }
+}
+
+/* Ensure content doesn't overflow on small screens */
+.markdown-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.markdown-content img,
+.markdown-content pre,
+.markdown-content table {
+  max-width: 100%;
+  overflow-x: auto;
+}

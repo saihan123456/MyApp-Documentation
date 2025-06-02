@@ -12,8 +12,8 @@ export default async function EditDocumentPage({ params }) {
     <div>
       <Navbar />
       <AuthCheck>
-        <div className="container" style={{ padding: '2rem 0' }}>
-          <h1>Edit Document</h1>
+        <div className="container" style={{ padding: '0.5rem 0' }}>
+          <h3>Edit Document</h3>
           <EditDocumentForm documentId={id} />
         </div>
       </AuthCheck>

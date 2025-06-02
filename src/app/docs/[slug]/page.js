@@ -4,6 +4,8 @@ import Link from 'next/link';
 import db from '@/app/lib/db';
 import { marked } from 'marked';
 import '@/app/styles/markdown.css';
+import '@/app/styles/responsive.css';
+import ResponsiveSidebar from '../../components/responsive-sidebar';
 
 // Configure marked options once at module level
 marked.setOptions({
@@ -66,37 +68,12 @@ export default async function DocumentPage({ params }) {
       <Navbar />
       
       <div className="container" style={{ padding: '2rem 0' }}>
-        <div style={{ display: 'flex', gap: '2rem' }}>
-          {/* Sidebar */}
-          <div style={{ 
-            width: '250px', 
-            flexShrink: 0,
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '1.5rem',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-            height: 'fit-content',
-          }}>
-            <h3 style={{ marginBottom: '1rem' }}>Documentation</h3>
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-              {sidebarLinks.map((link) => (
-                <li key={link.slug} style={{ marginBottom: '0.75rem' }}>
-                  <Link 
-                    href={`/docs/${link.slug}`} 
-                    style={{ 
-                      color: link.slug === slug ? 'var(--primary-color)' : 'var(--text-color)',
-                      fontWeight: link.slug === slug ? 'bold' : 'normal',
-                    }}
-                  >
-                    {link.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="docs-container" style={{ display: 'flex', gap: '2rem' }}>
+          {/* Responsive Sidebar - handles both desktop and mobile views */}
+          <ResponsiveSidebar links={sidebarLinks} currentSlug={slug} />
           
           {/* Main content */}
-          <div style={{ flex: 1 }}>
+          <div className="docs-content" style={{ flex: 1, width: '100%' }}>
             <h1>{document.title}</h1>
             <div style={{ 
               padding: '1rem',

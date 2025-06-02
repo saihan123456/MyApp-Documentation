@@ -7,10 +7,15 @@ import AuthCheck from '../../components/auth-check';
 import Navbar from '../../components/navbar';
 import dynamic from 'next/dynamic';
 import { marked } from 'marked';
+import CustomModalPlugin from '../../components/custom-modal-plugin';
 
 // Import the editor dynamically to avoid SSR issues
 const MdEditor = dynamic(
-  () => import('react-markdown-editor-lite'),
+  () => import('react-markdown-editor-lite').then(mod => {
+    // Register the custom plugin
+    mod.default.use(CustomModalPlugin);
+    return mod;
+  }),
   { ssr: false }
 );
 
@@ -99,50 +104,63 @@ export default function NewDocumentPage() {
       <div>
         <Navbar />
         
-        <div className="container" style={{ padding: '2rem 0' }}>
-          <h1>Create New Document</h1>
+        <div className="container" style={{ padding: '0.5rem 0', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+          <h3>Create New Document</h3>
           
           {error && (
-            <div className="alert alert-danger" style={{ marginTop: '1rem' }}>
+            <div className="alert alert-danger" style={{ marginTop: '0.5rem' }}>
               {error}
             </div>
           )}
           
-          <form onSubmit={handleSubmit} style={{ marginTop: '2rem' }}>
-            <div className="form-group">
-              <label htmlFor="title">Title</label>
-              <input
-                id="title"
-                type="text"
-                className="form-control"
-                value={title}
-                onChange={handleTitleChange}
-                disabled={isSubmitting}
-                required
-              />
+          <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              flexWrap: 'wrap', 
+              gap: '20px',
+              marginBottom: '2px'
+            }}>
+              <div className="form-group" style={{ flex: '1', minWidth: '250px' }}>
+                <label htmlFor="title">Title</label>
+                <input
+                  id="title"
+                  type="text"
+                  className="form-control"
+                  value={title}
+                  onChange={handleTitleChange}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+              
+              <div className="form-group" style={{ flex: '1', minWidth: '250px' }}>
+                <label htmlFor="slug">Slug</label>
+                <input
+                  id="slug"
+                  type="text"
+                  className="form-control"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  disabled={isSubmitting}
+                  required
+                />
+                <small style={{ color: 'var(--dark-gray)' }}>
+                  This will be the URL path: /docs/{slug}
+                </small>
+              </div>
             </div>
             
-            <div className="form-group">
-              <label htmlFor="slug">Slug</label>
-              <input
-                id="slug"
-                type="text"
-                className="form-control"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                disabled={isSubmitting}
-                required
-              />
-              <small style={{ color: 'var(--dark-gray)' }}>
-                This will be the URL path: /docs/{slug}
-              </small>
-            </div>
-            
-            <div className="form-group">
+            <div className="form-group" style={{ marginTop: '0px' }}>
               <label htmlFor="content">Content</label>
               <MdEditor
                 id="content"
-                style={{ height: '500px' }}
+                style={{ 
+                  height: '650px', 
+                  width: '100%',
+                  maxWidth: '100%',
+                  marginBottom: '10px'
+                }}
                 value={content}
                 renderHTML={renderHTML}
                 onChange={handleEditorChange}
@@ -154,7 +172,7 @@ export default function NewDocumentPage() {
               </small>
             </div>
             
-            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <input
                 id="published"
                 type="checkbox"
@@ -165,7 +183,7 @@ export default function NewDocumentPage() {
               <label htmlFor="published">Publish immediately</label>
             </div>
             
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
               <button
                 type="submit"
                 className="btn"
