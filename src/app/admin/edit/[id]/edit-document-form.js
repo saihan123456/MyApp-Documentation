@@ -76,8 +76,8 @@ export default function EditDocumentForm({ documentId }) {
         throw new Error(data.error || 'Failed to update document');
       }
       
-      // Redirect to documents list
-      router.push('/admin/documents');
+      // Redirect to admin dashboard
+      router.push('/admin');
       router.refresh();
     } catch (err) {
       console.error('Error updating document:', err);
@@ -182,7 +182,7 @@ export default function EditDocumentForm({ documentId }) {
               {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
             
-            <Link href="/admin/documents" className="btn btn-secondary">
+            <Link href="/admin" className="btn btn-secondary">
               Cancel
             </Link>
           </div>

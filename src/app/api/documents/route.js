@@ -3,24 +3,51 @@ import db from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-// GET /api/documents - Get all documents
+// GET /api/documents - Get documents with pagination
 export async function GET(request) {
   try {
-    // Check if we need to filter by published status
     const { searchParams } = new URL(request.url);
     const publishedOnly = searchParams.get('publishedOnly') === 'true';
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '15');
     
-    let query = 'SELECT id, title, slug, published, created_at, updated_at FROM docs';
-    
-    if (publishedOnly) {
-      query += ' WHERE published = 1';
+    // Validate pagination parameters
+    if (page < 1 || limit < 1 || limit > 100) {
+      return NextResponse.json(
+        { error: 'Invalid pagination parameters' },
+        { status: 400 }
+      );
     }
     
-    query += ' ORDER BY created_at DESC';
+    const offset = (page - 1) * limit;
     
-    const documents = db.prepare(query).all();
+    // Build the base query
+    let whereClause = '';
+    if (publishedOnly) {
+      whereClause = ' WHERE published = 1';
+    }
     
-    return NextResponse.json(documents);
+    // Get total count for pagination
+    const countQuery = `SELECT COUNT(*) as total FROM docs${whereClause}`;
+    const { total } = db.prepare(countQuery).get();
+    
+    // Get paginated documents
+    const query = `
+      SELECT id, title, slug, published, created_at, updated_at 
+      FROM docs${whereClause}
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+    
+    const documents = db.prepare(query).all(limit, offset);
+    
+    return NextResponse.json({
+      documents,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (error) {
     console.error('Error fetching documents:', error);
     return NextResponse.json(

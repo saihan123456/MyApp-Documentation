@@ -1,5 +1,5 @@
-import Navbar from '../../../../components/navbar';
-import AuthCheck from '../../../../components/auth-check';
+import Navbar from '../../../components/navbar';
+import AuthCheck from '../../../components/auth-check';
 import EditDocumentForm from './edit-document-form';
 
 // This is a server component that can properly handle params

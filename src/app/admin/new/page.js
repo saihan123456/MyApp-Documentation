@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AuthCheck from '../../../components/auth-check';
-import Navbar from '../../../components/navbar';
+import AuthCheck from '../../components/auth-check';
+import Navbar from '../../components/navbar';
 
 export default function NewDocumentPage() {
   const router = useRouter();
@@ -45,8 +45,8 @@ export default function NewDocumentPage() {
         throw new Error(data.error || 'Failed to create document');
       }
       
-      // Redirect to documents list
-      router.push('/admin/documents');
+      // Redirect to admin dashboard
+      router.push('/admin');
       router.refresh();
     } catch (err) {
       console.error('Error creating document:', err);
@@ -154,7 +154,7 @@ export default function NewDocumentPage() {
                 {isSubmitting ? 'Creating...' : 'Create Document'}
               </button>
               
-              <Link href="/admin/documents" className="btn btn-secondary">
+              <Link href="/admin" className="btn btn-secondary">
                 Cancel
               </Link>
             </div>

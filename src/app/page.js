@@ -48,7 +48,7 @@ export default async function Home() {
         }}>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>MyApp Documentation</h1>
           <p style={{ fontSize: '1.25rem', color: 'var(--dark-gray)', maxWidth: '700px', margin: '0 auto' }}>
-            Comprehensive guides, API references, and examples to help you build amazing applications with MyApp.
+            Comprehensive guides, API references, and examples to help you with the usage of MyApp.
           </p>
           <div style={{ marginTop: '2rem' }}>
             <Link href="/docs/getting-started" className="btn">
