@@ -1,95 +1,157 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from 'next/link';
+import Navbar from './components/navbar';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  // documentation sections
+  const documentSections = [
+    {
+      title: 'Docs',
+      description: 'See full documentation',
+      slug: 'getting-started',
+    },
+    {
+      title: 'FAQ',
+      description: 'Frequently Asked Questions',
+      slug: 'faq',
+    }
+  ];
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  return (
+    <div>
+      <Navbar />
+      
+      <div className="container">
+        {/* Hero section */}
+        <div style={{ 
+          padding: '4rem 0', 
+          textAlign: 'center',
+          borderBottom: '1px solid var(--light-gray)',
+        }}>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>MyApp Documentation</h1>
+          <p style={{ fontSize: '1.25rem', color: 'var(--dark-gray)', maxWidth: '700px', margin: '0 auto' }}>
+            Comprehensive guides, API references, and examples to help you build amazing applications with MyApp.
+          </p>
+          <div style={{ marginTop: '2rem' }}>
+            <Link href="/docs/getting-started" className="btn">
+              Get Started
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
+        {/* Documentation sections */}
+        <div style={{ padding: '4rem 0' }}>
+          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Documentation</h2>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '2rem'
+          }}>
+            {documentSections.map((section) => (
+              <div key={section.slug} style={{ 
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                padding: '1.5rem',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+              }}>
+                <h3 style={{ marginBottom: '0.5rem' }}>{section.title}</h3>
+                <p style={{ color: 'var(--dark-gray)', marginBottom: '1rem' }}>
+                  {section.description}
+                </p>
+                <Link href={`/docs/${section.slug}`} style={{ 
+                  color: 'var(--primary-color)',
+                  fontWeight: 'bold',
+                }}>
+                  Read more →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Features section */}
+        <div style={{ 
+          padding: '4rem 0',
+          backgroundColor: 'var(--light-gray)',
+          margin: '0 -20px',
+          padding: '4rem 20px',
+        }}>
+          <div className="container">
+            <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Key Features</h2>
+            
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+              gap: '2rem',
+            }}>
+              <FeatureCard 
+                title="High Performance" 
+                description="Optimized for speed and efficiency in all environments"
+                icon="⚡"
+              />
+              <FeatureCard 
+                title="Easy Integration" 
+                description="Seamlessly integrates with your existing workflow"
+                icon="🔄"
+              />
+              <FeatureCard 
+                title="Extensive Documentation" 
+                description="Detailed guides and API references"
+                icon="📚"
+              />
+              <FeatureCard 
+                title="Active Community" 
+                description="Join a thriving ecosystem of developers"
+                icon="👥"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <footer style={{ 
+        backgroundColor: 'var(--secondary-color)',
+        color: 'white',
+        padding: '2rem 0',
+        marginTop: '4rem',
+      }}>
+        <div className="container">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}>
+            <div>
+              <h3 style={{ marginBottom: '0.5rem' }}>MyApp Docs</h3>
+              <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>© 2025 MyApp. All rights reserved.</p>
+            </div>
+            <div>
+              <Link href="/" style={{ color: 'white', marginRight: '1rem' }}>Home</Link>
+              <Link href="/docs" style={{ color: 'white', marginRight: '1rem' }}>Documentation</Link>
+              <Link href="/login" style={{ color: 'white' }}>Admin</Link>
+            </div>
+          </div>
+        </div>
       </footer>
+    </div>
+  );
+}
+
+function FeatureCard({ title, description, icon }) {
+  return (
+    <div style={{ 
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '1.5rem',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+      textAlign: 'center',
+    }}>
+      <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{icon}</div>
+      <h3 style={{ marginBottom: '0.5rem' }}>{title}</h3>
+      <p style={{ color: 'var(--dark-gray)' }}>{description}</p>
     </div>
   );
 }
