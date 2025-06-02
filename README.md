@@ -14,6 +14,16 @@ npm install --legacy-peer-deps
 
 This project uses SQLite as the database, which is a lightweight, file-based database that requires no additional setup or server installation.
 
+#### Database Migration
+
+Before running the application for the first time or after updating the codebase, you should run the database migration script to ensure all required tables are created:
+
+```bash
+node src/app/lib/db/migrate.js
+```
+
+#### Database Seeding
+
 The project includes database seeding scripts to populate your database with initial data:
 
 ```bash

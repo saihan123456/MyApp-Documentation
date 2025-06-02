@@ -4,9 +4,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // GET /api/documents/[id] - Get a single document
-export async function GET(request, { params }) {
+export async function GET(request) {
   try {
-    const id = params.id;
+    // Extract the id from the URL path
+    const pathParts = request.url.split('/');
+    const id = pathParts[pathParts.length - 1];
     
     // Check if we're fetching by ID or slug
     let document;
@@ -49,7 +51,7 @@ export async function GET(request, { params }) {
 }
 
 // PUT /api/documents/[id] - Update a document
-export async function PUT(request, { params }) {
+export async function PUT(request) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -61,7 +63,10 @@ export async function PUT(request, { params }) {
       );
     }
     
-    const id = params.id;
+    // Extract the id from the URL path
+    const pathParts = request.url.split('/');
+    const id = pathParts[pathParts.length - 1];
+    
     const body = await request.json();
     const { title, content, slug, published } = body;
     
@@ -111,7 +116,7 @@ export async function PUT(request, { params }) {
 }
 
 // DELETE /api/documents/[id] - Delete a document
-export async function DELETE(request, { params }) {
+export async function DELETE(request) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -123,7 +128,9 @@ export async function DELETE(request, { params }) {
       );
     }
     
-    const id = params.id;
+    // Extract the id from the URL path
+    const pathParts = request.url.split('/');
+    const id = pathParts[pathParts.length - 1];
     
     // Check if document exists
     const existingDoc = db.prepare('SELECT id FROM docs WHERE id = ?').get(id);
