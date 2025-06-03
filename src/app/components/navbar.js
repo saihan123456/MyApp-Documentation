@@ -164,11 +164,21 @@ export default function Navbar() {
               <Link href="/admin" style={{
                 color: 'white',
                 padding: '0.5rem',
-                fontWeight: pathname?.startsWith('/admin') ? 'bold' : 'normal',
-                borderBottom: pathname?.startsWith('/admin') ? '2px solid white' : 'none',
+                fontWeight: pathname?.startsWith('/admin') && !pathname?.startsWith('/admin/settings') ? 'bold' : 'normal',
+                borderBottom: pathname?.startsWith('/admin') && !pathname?.startsWith('/admin/settings') ? '2px solid white' : 'none',
                 textDecoration: 'none',
               }}>
                 Admin
+              </Link>
+              
+              <Link href="/admin/settings" style={{
+                color: 'white',
+                padding: '0.5rem',
+                fontWeight: pathname?.startsWith('/admin/settings') ? 'bold' : 'normal',
+                borderBottom: pathname?.startsWith('/admin/settings') ? '2px solid white' : 'none',
+                textDecoration: 'none',
+              }}>
+                Settings
               </Link>
               
               <button 

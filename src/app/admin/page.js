@@ -163,6 +163,13 @@ export default function AdminDashboard() {
                 icon="📋"
                 isCount={true}
               />
+              
+              <AdminCard 
+                title="Account Settings" 
+                description="Manage your account and reset password"
+                link="/admin/settings"
+                icon="🔒"
+              />
             </div>
           </div>
           
