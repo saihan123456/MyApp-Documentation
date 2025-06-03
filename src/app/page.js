@@ -87,45 +87,6 @@ export default async function Home() {
             ))}
           </div>
         </div>
-        
-        {/* Features section */}
-        <div style={{ 
-          padding: '4rem 0',
-          backgroundColor: 'var(--light-gray)',
-          margin: '0 -20px',
-          padding: '4rem 20px',
-        }}>
-          <div className="container">
-            <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Key Features</h2>
-            
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: '2rem',
-            }}>
-              <FeatureCard 
-                title="High Performance" 
-                description="Optimized for speed and efficiency in all environments"
-                icon="⚡"
-              />
-              <FeatureCard 
-                title="Easy Integration" 
-                description="Seamlessly integrates with your existing workflow"
-                icon="🔄"
-              />
-              <FeatureCard 
-                title="Extensive Documentation" 
-                description="Detailed guides and API references"
-                icon="📚"
-              />
-              <FeatureCard 
-                title="Active Community" 
-                description="Join a thriving ecosystem of developers"
-                icon="👥"
-              />
-            </div>
-          </div>
-        </div>
       </div>
       
       {/* Footer */}
@@ -154,18 +115,3 @@ export default async function Home() {
   );
 }
 
-function FeatureCard({ title, description, icon }) {
-  return (
-    <div style={{ 
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      padding: '1.5rem',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      textAlign: 'center',
-    }}>
-      <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{icon}</div>
-      <h3 style={{ marginBottom: '0.5rem' }}>{title}</h3>
-      <p style={{ color: 'var(--dark-gray)' }}>{description}</p>
-    </div>
-  );
-}
