@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-// Define the default locale
+// Define the default locale and supported locales
 const defaultLocale = 'en';
+const supportedLocales = ['en', 'ja']; // Add all your supported locales here
 
 // Cookie name for language preference - must match the one in LanguageContext.js
 const LANGUAGE_COOKIE_NAME = 'preferred_language';
@@ -18,6 +19,30 @@ export async function middleware(request) {
   if (pathname === '/') {
     // Redirect to the user's preferred locale
     return NextResponse.redirect(new URL(`/${locale}`, request.url));
+  }
+  
+  // Get the path segments
+  const segments = pathname.split('/');
+  const firstSegment = segments[1]; // First segment after the leading slash
+  
+  // If there's a cookie language set and it doesn't match the URL locale
+  if (cookieLanguage && firstSegment) {
+    // Case 1: URL has an unsupported locale - redirect to preferred locale
+    if (!supportedLocales.includes(firstSegment)) {
+      const pathWithoutFirstSegment = segments.slice(2).join('/');
+      return NextResponse.redirect(new URL(`/${cookieLanguage}/${pathWithoutFirstSegment}`, request.url));
+    }
+    
+    // Case 2: URL has a supported locale but it doesn't match the user's preference
+    if (firstSegment !== cookieLanguage) {
+      // Replace the locale in the URL with the user's preferred locale
+      const pathWithoutLocale = segments.slice(2).join('/');
+      return NextResponse.redirect(new URL(`/${cookieLanguage}/${pathWithoutLocale}`, request.url));
+    }
+  } else if (firstSegment && !supportedLocales.includes(firstSegment)) {
+    // No cookie but invalid locale - redirect to default locale
+    const pathWithoutFirstSegment = segments.slice(2).join('/');
+    return NextResponse.redirect(new URL(`/${defaultLocale}/${pathWithoutFirstSegment}`, request.url));
   }
   
   // Handle old routes that should be redirected to locale-based routes
@@ -57,9 +82,13 @@ export async function middleware(request) {
 // Configure which paths the middleware should run on
 export const config = {
   matcher: [
-    '/',
-    '/admin/:path*',  // Catch old admin routes and redirect them
-    '/login',        // Catch old login route and redirect it
-    '/:locale/admin/:path*',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
