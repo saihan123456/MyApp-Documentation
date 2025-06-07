@@ -53,7 +53,7 @@ export default function SearchPage() {
     <div>
       <Navbar />
       
-      <div className="container" style={{ padding: '2rem 0' }}>
+      <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
         <h1>Search Results</h1>
         <p>Showing results for: <strong>{query}</strong></p>
         

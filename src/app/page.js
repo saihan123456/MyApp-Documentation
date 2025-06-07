@@ -26,20 +26,44 @@ export default async function Home() {
   }
   
   // Add descriptions if they don't exist in the database
-  const processedDocuments = documentSections.map(doc => ({
-    ...doc,
-    // Create a description from the content if it doesn't exist
-    description: doc.description || (doc.content ? 
-      // Extract first 100 characters from content as description
-      doc.content.replace(/[#*_]/g, '').substring(0, 100) + '...' : 
-      'View this document')
-  }));
+  const processedDocuments = documentSections.map(doc => {
+    let description = doc.description;
+    
+    // If no description exists, create one from the content
+    if (!description && doc.content) {
+      // Remove markdown images
+      const contentWithoutImages = doc.content.replace(/!\[.*?\]\(.*?\)/g, '');
+      // Remove HTML images
+      const contentWithoutHtmlImages = contentWithoutImages.replace(/<img[^>]*>/g, '');
+      // Remove markdown formatting characters
+      const plainText = contentWithoutHtmlImages
+        .replace(/[#*_`]/g, '') // Remove markdown formatting
+        .replace(/\[.*?\]\(.*?\)/g, '$1') // Replace links with just the text
+        .replace(/<[^>]*>/g, '') // Remove any HTML tags
+        .replace(/\n+/g, ' ') // Replace newlines with spaces
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+      
+      // Extract first 100 characters for description
+      description = plainText.substring(0, 100);
+      if (plainText.length > 100) {
+        description += '...';
+      }
+    } else if (!description) {
+      description = 'View this document';
+    }
+    
+    return {
+      ...doc,
+      description
+    };
+  });
 
   return (
     <div>
       <Navbar />
       
-      <div className="container">
+      <div className="container" style={{ paddingTop: 'var(--navbar-height, 70px)' }}>
         {/* Hero section */}
         <div style={{ 
           padding: '4rem 0', 

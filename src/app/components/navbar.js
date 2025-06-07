@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -12,6 +12,48 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [language, setLanguage] = useState('en'); // Default language is English
+  const [isMobile, setIsMobile] = useState(false);
+  const [navbarHeight, setNavbarHeight] = useState(60); // Default height
+  
+  // Check if we're on a mobile device on component mount and window resize
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+    };
+    
+    // Initial check
+    checkIfMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+  
+  // Measure navbar height after render and when window resizes
+  useEffect(() => {
+    const updateNavbarHeight = () => {
+      const navElement = document.querySelector('nav');
+      if (navElement) {
+        const height = navElement.offsetHeight;
+        setNavbarHeight(height);
+        
+        // Update CSS variable for the navbar height
+        document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+      }
+    };
+    
+    // Initial measurement
+    updateNavbarHeight();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', updateNavbarHeight);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', updateNavbarHeight);
+  }, []);
   
   const handleSearch = (e) => {
     e.preventDefault();
@@ -34,7 +76,13 @@ export default function Navbar() {
     <nav style={{
       backgroundColor: 'var(--secondary-color)',
       color: 'white',
-      padding: '1rem 0',
+      padding: '0.7rem 0',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      width: '100%',
+      zIndex: 1000,
     }}>
       <div className="container" style={{
         display: 'flex',

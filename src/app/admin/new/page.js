@@ -104,7 +104,7 @@ export default function NewDocumentPage() {
       <div>
         <Navbar />
         
-        <div className="container" style={{ padding: '0.5rem 0', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="container" style={{ padding: '0.5rem 0', paddingTop: 'var(--navbar-height, 75px)', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
           <h3>Create New Document</h3>
           
           {error && (

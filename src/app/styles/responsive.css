@@ -10,12 +10,24 @@
     width: 100% !important;
     padding-left: 0 !important;
   }
+  
+  /* Add margins to container on mobile */
+  .container {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
 }
 
 /* Tablet styles (768px to 1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {
   .docs-container {
     gap: 1.5rem !important;
+  }
+  
+  /* Add margins to container on tablet */
+  .container {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
   }
 }
 

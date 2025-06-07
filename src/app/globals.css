@@ -7,6 +7,7 @@
   --light-gray: #e9ecef;
   --medium-gray: #ced4da;
   --dark-gray: #6c757d;
+  --navbar-height: 60px; /* Default navbar height, will be updated by JS */
 }
 
 * {
@@ -40,6 +41,20 @@ a:hover {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+/* Ensure container has proper padding on all devices */
+@media (max-width: 767px) {
+  .container {
+    padding: 0 7px;
+  }
+}
+
+/* Tablet padding */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container {
+    padding: 0 7px;
+  }
 }
 
 .btn {

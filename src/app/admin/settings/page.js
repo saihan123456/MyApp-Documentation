@@ -85,7 +85,7 @@ export default function SettingsPage() {
       <div>
         <Navbar />
         
-        <div className="container" style={{ padding: '2rem 0' }}>
+        <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
             <Link href="/admin" style={{ marginRight: '1rem' }}>
               &larr; Back to Dashboard

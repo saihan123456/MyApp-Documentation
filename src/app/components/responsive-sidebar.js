@@ -82,11 +82,11 @@ export default function ResponsiveSidebar({ links, currentSlug }) {
         height: 'fit-content',
         position: isMobile ? 'fixed' : 'relative',
         left: isMobile ? (isOpen ? '0' : '-280px') : '0',
-        top: isMobile ? '70px' : '0',
+        top: isMobile ? 'var(--navbar-height, 75px)' : '0',
         zIndex: 999,
         transition: 'left 0.3s ease',
         overflowY: 'auto',
-        maxHeight: isMobile ? 'calc(100vh - 70px)' : 'none',
+        maxHeight: isMobile ? 'calc(100vh - var(--navbar-height, 75px))' : 'none',
       }}>
         <h3 style={{ marginBottom: '1rem' }}>Documentation</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>

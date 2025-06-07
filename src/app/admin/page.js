@@ -131,7 +131,7 @@ export default function AdminDashboard() {
       <div>
         <Navbar />
         
-        <div className="container" style={{ padding: '2rem 0' }}>
+        <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
           <h1>Admin Dashboard</h1>
           <p>Welcome, {session?.user?.name || session?.user?.username || 'Admin'}</p>
           

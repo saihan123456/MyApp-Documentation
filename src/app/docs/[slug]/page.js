@@ -67,7 +67,7 @@ export default async function DocumentPage({ params }) {
     <div>
       <Navbar />
       
-      <div className="container" style={{ padding: '2rem 0' }}>
+      <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
         <div className="docs-container" style={{ display: 'flex', gap: '2rem' }}>
           {/* Responsive Sidebar - handles both desktop and mobile views */}
           <ResponsiveSidebar links={sidebarLinks} currentSlug={slug} />
