@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from '../components/navbar';
+import Navbar from '@/app/components/navbar';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();

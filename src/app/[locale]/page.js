@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Navbar from './components/navbar';
-import db from './lib/db';
+import Navbar from '@/app/components/navbar';
+import db from '@/app/lib/db';
 
 // Function to fetch the first three documents from the database
 async function getTopThreeDocuments() {
@@ -12,7 +12,9 @@ async function getTopThreeDocuments() {
   }
 }
 
-export default async function Home() {
+export default async function Home({ params }) {
+  // Extract the locale from params
+  const { locale } = await params;
   // Fetch the first three documents from the database
   const documentSections = await getTopThreeDocuments();
   
@@ -75,7 +77,7 @@ export default async function Home() {
             Comprehensive guides, API references, and examples to help you with the usage of MyApp.
           </p>
           <div style={{ marginTop: '2rem' }}>
-            <Link href="/docs/getting-started" className="btn">
+            <Link href={`/${locale}/docs/getting-started`} className="btn">
               Get Started
             </Link>
           </div>
@@ -101,7 +103,7 @@ export default async function Home() {
                 <p style={{ color: 'var(--dark-gray)', marginBottom: '1rem' }}>
                   {section.description}
                 </p>
-                <Link href={`/docs/${section.slug}`} style={{ 
+                <Link href={`/${locale}/docs/${section.slug}`} style={{ 
                   color: 'var(--primary-color)',
                   fontWeight: 'bold',
                 }}>

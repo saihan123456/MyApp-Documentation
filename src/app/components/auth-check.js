@@ -1,18 +1,22 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AuthCheck({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+  const { language } = useLanguage();
   
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/login');
+      // Use the language from context for the redirect
+      router.push(`/${language}/login?callbackUrl=${encodeURIComponent(pathname)}`);
     }
-  }, [status, router]);
+  }, [status, router, language, pathname]);
   
   if (status === 'loading') {
     return (

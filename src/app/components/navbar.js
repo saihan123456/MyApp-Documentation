@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -11,7 +12,7 @@ export default function Navbar() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
-  const [language, setLanguage] = useState('en'); // Default language is English
+  const { language, changeLanguage } = useLanguage(); // Use the language context
   const [isMobile, setIsMobile] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(60); // Default height
   
@@ -58,7 +59,7 @@ export default function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/${language}/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
   
@@ -67,9 +68,8 @@ export default function Navbar() {
   };
   
   const selectLanguage = (lang) => {
-    setLanguage(lang);
+    changeLanguage(lang); // Use the context's changeLanguage function
     setShowLanguageDropdown(false);
-    // Language logic will be implemented later
   };
   
   return (
@@ -90,7 +90,7 @@ export default function Navbar() {
         alignItems: 'center',
       }}>
         <div>
-          <Link href="/" style={{
+          <Link href={`/${language}`} style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
             color: 'white',
@@ -209,21 +209,21 @@ export default function Navbar() {
           {/* Admin and authentication links - only shown when authenticated */}
           {status === 'authenticated' && (
             <>
-              <Link href="/admin" style={{
+              <Link href={`/${language}/admin`} style={{
                 color: 'white',
                 padding: '0.5rem',
-                fontWeight: pathname?.startsWith('/admin') && !pathname?.startsWith('/admin/settings') ? 'bold' : 'normal',
-                borderBottom: pathname?.startsWith('/admin') && !pathname?.startsWith('/admin/settings') ? '2px solid white' : 'none',
+                fontWeight: pathname?.startsWith(`/${language}/admin`) && !pathname?.startsWith(`/${language}/admin/settings`) ? 'bold' : 'normal',
+                borderBottom: pathname?.startsWith(`/${language}/admin`) && !pathname?.startsWith(`/${language}/admin/settings`) ? '2px solid white' : 'none',
                 textDecoration: 'none',
               }}>
                 Admin
               </Link>
               
-              <Link href="/admin/settings" style={{
+              <Link href={`/${language}/admin/settings`} style={{
                 color: 'white',
                 padding: '0.5rem',
-                fontWeight: pathname?.startsWith('/admin/settings') ? 'bold' : 'normal',
-                borderBottom: pathname?.startsWith('/admin/settings') ? '2px solid white' : 'none',
+                fontWeight: pathname?.startsWith(`/${language}/admin/settings`) ? 'bold' : 'normal',
+                borderBottom: pathname?.startsWith(`/${language}/admin/settings`) ? '2px solid white' : 'none',
                 textDecoration: 'none',
               }}>
                 Settings

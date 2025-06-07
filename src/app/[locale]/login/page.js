@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  // Extract the locale from pathname instead of params
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1]; // Gets the first segment after the leading slash
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
@@ -15,7 +18,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   
   // Get the callback URL from the URL parameters
-  const callbackUrl = searchParams.get('callbackUrl') || '/admin';
+  // If no callback URL is provided, default to the admin page with the current locale
+  const callbackUrl = searchParams.get('callbackUrl') || `/${locale}/admin`;
 
   // Redirect to callback URL if already authenticated
   useEffect(() => {

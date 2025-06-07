@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
-import Navbar from '../../components/navbar';
+import Navbar from '@/app/components/navbar';
 import Link from 'next/link';
 import db from '@/app/lib/db';
 import { marked } from 'marked';
 import '@/app/styles/markdown.css';
 import '@/app/styles/responsive.css';
-import ResponsiveSidebar from '../../components/responsive-sidebar';
+import ResponsiveSidebar from '@/app/components/responsive-sidebar';
 
 // Configure marked options once at module level
 marked.setOptions({

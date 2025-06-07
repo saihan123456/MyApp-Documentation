@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import AuthCheck from '../components/auth-check';
-import Navbar from '../components/navbar';
+import { useRouter, usePathname } from 'next/navigation';
+import AuthCheck from '@/app/components/auth-check';
+import Navbar from '@/app/components/navbar';
 import Link from 'next/link';
-import Pagination from '../components/pagination';
+import Pagination from '@/app/components/pagination';
 
 export default function AdminDashboard() {
+  // Extract the locale from pathname instead of params
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1]; // Gets the first segment after the leading slash
   const router = useRouter();
   const { data: session } = useSession();
   const [documents, setDocuments] = useState([]);
@@ -167,7 +170,7 @@ export default function AdminDashboard() {
               <AdminCard 
                 title="Account Settings" 
                 description="Manage your account and reset password"
-                link="/admin/settings"
+                link={`/${locale}/admin/settings`}
                 icon="🔒"
               />
             </div>
@@ -176,7 +179,7 @@ export default function AdminDashboard() {
           <div style={{ marginTop: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h2>Documents</h2>
-              <Link href="/admin/new" className="btn">
+              <Link href={`/${locale}/admin/new`} className="btn">
                 Create New Document
               </Link>
             </div>
@@ -223,7 +226,7 @@ export default function AdminDashboard() {
                             </td>
                             <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                               <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                                <Link href={`/admin/edit/${doc.id}`} style={{
+                                <Link href={`/${locale}/admin/edit/${doc.id}`} style={{
                                   color: 'var(--primary-color)',
                                   textDecoration: 'none',
                                 }}>
