@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useTranslations } from '../translations/client';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -15,6 +16,7 @@ export default function Navbar() {
   const { language, changeLanguage } = useLanguage(); // Use the language context
   const [isMobile, setIsMobile] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(60); // Default height
+  const t = useTranslations(); // Get translations based on current locale
   
   // Check if we're on a mobile device on component mount and window resize
   useEffect(() => {
@@ -91,12 +93,12 @@ export default function Navbar() {
       }}>
         <div>
           <Link href={`/${language}`} style={{
-            fontSize: '1.5rem',
+            fontSize: language=='ja' && isMobile? '1rem': '1.5rem',
             fontWeight: 'bold',
             color: 'white',
             textDecoration: 'none',
           }}>
-            MyApp Docs
+            {t.appTitle}
           </Link>
         </div>
         
@@ -107,7 +109,7 @@ export default function Navbar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search documents..."
+              placeholder={t.searchPlaceholder}
               style={{
                 padding: '0.5rem 2.5rem 0.5rem 0.75rem',
                 borderRadius: '4px',
@@ -216,7 +218,7 @@ export default function Navbar() {
                 borderBottom: pathname?.startsWith(`/${language}/admin`) && !pathname?.startsWith(`/${language}/admin/settings`) ? '2px solid white' : 'none',
                 textDecoration: 'none',
               }}>
-                Admin
+                {t.admin}
               </Link>
               
               <Link href={`/${language}/admin/settings`} style={{
@@ -226,7 +228,7 @@ export default function Navbar() {
                 borderBottom: pathname?.startsWith(`/${language}/admin/settings`) ? '2px solid white' : 'none',
                 textDecoration: 'none',
               }}>
-                Settings
+                {t.settings}
               </Link>
               
               <button 
@@ -239,7 +241,7 @@ export default function Navbar() {
                   padding: '0.5rem',
                 }}
               >
-                Logout
+                {t.signOut}
               </button>
             </>
           )}

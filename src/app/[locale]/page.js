@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Navbar from '@/app/components/navbar';
 import db from '@/app/lib/db';
+import { getTranslations } from '@/app/translations';
 
 // Function to fetch the first three documents from the database for a specific locale
 async function getTopThreeDocuments(locale) {
@@ -15,6 +16,8 @@ async function getTopThreeDocuments(locale) {
 export default async function Home({ params }) {
   // Extract the locale from params
   const { locale } = await params;
+  // Get translations for the current locale
+  const t = getTranslations(locale);
   // Fetch the first three documents from the database for this locale
   const documentSections = await getTopThreeDocuments(locale);
   
@@ -72,20 +75,20 @@ export default async function Home({ params }) {
           textAlign: 'center',
           borderBottom: '1px solid var(--light-gray)',
         }}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>MyApp Documentation</h1>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{t.heroTitle}</h1>
           <p style={{ fontSize: '1.25rem', color: 'var(--dark-gray)', maxWidth: '700px', margin: '0 auto' }}>
-            Comprehensive guides, API references, and examples to help you with the usage of MyApp.
+            {t.heroDescription}
           </p>
           <div style={{ marginTop: '2rem' }}>
             <Link href={`/${locale}/docs/`} className="btn">
-              Get Started
+              {t.getStarted}
             </Link>
           </div>
         </div>
         
         {/* Documentation sections */}
         <div style={{ padding: '4rem 0' }}>
-          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Documentation</h2>
+          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>{t.documentation}</h2>
           
           <div style={{ 
             display: 'grid', 
@@ -107,7 +110,7 @@ export default async function Home({ params }) {
                   color: 'var(--primary-color)',
                   fontWeight: 'bold',
                 }}>
-                  Read more →
+                  {t.readMore}
                 </Link>
               </div>
             ))}
@@ -131,8 +134,8 @@ export default async function Home({ params }) {
             gap: '1rem',
           }}>
             <div style={{ textAlign: 'center' }}>
-              <h3 style={{ marginBottom: '0.5rem' }}>MyApp Docs</h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>© 2025 MyApp. All rights reserved.</p>
+              <h3 style={{ marginBottom: '0.5rem' }}>{t.footerTitle}</h3>
+              <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>{t.footerCopyright}</p>
             </div>
           </div>
         </div>
