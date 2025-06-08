@@ -33,20 +33,34 @@ export function LanguageProvider({ children }) {
     // Update state
     setLanguage(newLanguage);
     
-    // Redirect to the same page but with new locale
+    // Redirect to the appropriate page with new locale
     if (pathname) {
+      // Get the current URL to preserve search parameters
+      const url = new URL(window.location.href);
+      const searchParams = url.search; // This includes the '?' character
+      
       // Extract current locale from pathname
       const pathParts = pathname.split('/');
       
-      // If path has at least one segment (after the initial slash)
+      // Check if we're on a document page (which has unique slugs per language)
+      const isDocumentPage = pathParts.length > 2 && pathParts[2] === 'docs' && pathParts.length > 3;
+      
+      // If we're on a document page, redirect to home page of the new language
+      if (isDocumentPage) {
+        router.push(`/${newLanguage}`);
+        return;
+      }
+      
+      // For other pages, maintain the current path but change the locale
       if (pathParts.length > 1) {
         // Replace the locale part (first segment) with the new language
         pathParts[1] = newLanguage;
         const newPath = pathParts.join('/');
-        router.push(newPath);
+        // Preserve search parameters when redirecting
+        router.push(`${newPath}${searchParams}`);
       } else {
         // If we're at root, just go to the new language root
-        router.push(`/${newLanguage}`);
+        router.push(`/${newLanguage}${searchParams}`);
       }
     }
   };

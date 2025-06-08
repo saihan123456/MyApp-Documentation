@@ -86,7 +86,7 @@ export default async function DocumentPage({ params }) {
               marginTop: '1rem',
               marginBottom: '2rem',
             }}>
-              <p>Last updated: {new Date(document.updated_at).toLocaleDateString()}</p>
+              <p>Last updated: {new Date(document.updated_at).toISOString().split('T')[0]}</p>
             </div>
             
             {/* Render the document content with markdown */}

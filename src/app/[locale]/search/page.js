@@ -24,7 +24,8 @@ export default function SearchPage() {
 
       try {
         setLoading(true);
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        // Include locale in the search request
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&language=${locale}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch search results');

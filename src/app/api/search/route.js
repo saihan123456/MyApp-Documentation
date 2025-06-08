@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import db from '@/app/lib/db';
 
-// GET /api/search?q=query - Search documents by title or content
+// GET /api/search?q=query&language=locale - Search documents by title or content with language filter
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
+    const language = searchParams.get('language');
     
     if (!query || query.trim() === '') {
       return NextResponse.json([]);
@@ -14,14 +15,29 @@ export async function GET(request) {
     // Search in both title and content, only published documents
     const searchTerm = `%${query}%`;
     
-    const results = db.prepare(`
+    // Prepare query parameters
+    const queryParams = [];
+    // Add query parameters for the CASE statement (twice)
+    queryParams.push(query, query);
+    
+    // Build the SQL query with optional language filter
+    let sql = `
       SELECT id, title, slug, published, created_at, updated_at,
              CASE
                WHEN instr(lower(title), lower(?)) > 0 THEN title
                ELSE substr(content, max(1, instr(lower(content), lower(?)) - 50), 200)
              END as snippet
       FROM docs
-      WHERE published = 1 AND (
+      WHERE published = 1`;
+      
+    // Add language filter if provided
+    if (language) {
+      sql += ` AND language = ?`;
+      queryParams.push(language);
+    }
+    
+    // Add search conditions
+    sql += ` AND (
         title LIKE ? OR
         content LIKE ?
       )
@@ -32,9 +48,12 @@ export async function GET(request) {
         END,
         created_at DESC
       LIMIT 20
-    `).all(
-      query, query, searchTerm, searchTerm, query
-    );
+    `;
+    
+    // Add remaining query parameters
+    queryParams.push(searchTerm, searchTerm, query);
+    
+    const results = db.prepare(sql).all(...queryParams);
     
     // Process snippets to make them more readable
     const processedResults = results.map(doc => {
