@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function ResponsiveSidebar({ links, currentSlug }) {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const locale = pathname.split('/')[1];
 
   // Check if we're on a mobile device on component mount and window resize
   useEffect(() => {
@@ -93,7 +96,7 @@ export default function ResponsiveSidebar({ links, currentSlug }) {
           {links.map((link) => (
             <li key={link.slug} style={{ marginBottom: '0.75rem' }}>
               <Link 
-                href={`/docs/${link.slug}`} 
+                href={`/${locale}/docs/${link.slug}`} 
                 onClick={handleLinkClick}
                 style={{ 
                   color: link.slug === currentSlug ? 'var(--primary-color)' : 'var(--text-color)',

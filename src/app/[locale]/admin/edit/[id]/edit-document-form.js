@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { marked } from 'marked';
-import CustomModalPlugin from '../../../components/custom-modal-plugin';
+import CustomModalPlugin from '@/app/components/custom-modal-plugin';
 
 // Import the editor dynamically to avoid SSR issues
 const MdEditor = dynamic(
@@ -22,6 +22,8 @@ import 'react-markdown-editor-lite/lib/index.css';
 
 export default function EditDocumentForm({ documentId }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
   const id = documentId;
   
   const [title, setTitle] = useState('');
@@ -103,7 +105,7 @@ export default function EditDocumentForm({ documentId }) {
       }
       
       // Redirect to admin dashboard
-      router.push('/admin');
+      router.push(`/${locale}/admin`);
       router.refresh();
     } catch (err) {
       console.error('Error updating document:', err);
@@ -220,7 +222,7 @@ export default function EditDocumentForm({ documentId }) {
               {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
             
-            <Link href="/admin" className="btn btn-secondary">
+            <Link href={`/${locale}/admin`} className="btn btn-secondary">
               Cancel
             </Link>
           </div>

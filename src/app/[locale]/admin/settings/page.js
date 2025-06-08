@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import AuthCheck from '../../components/auth-check';
-import Navbar from '../../components/navbar';
+import { usePathname } from 'next/navigation';
+import AuthCheck from '@/app/components/auth-check';
+import Navbar from '@/app/components/navbar';
 import Link from 'next/link';
 
 export default function SettingsPage() {
-  const router = useRouter();
-  const { data: session } = useSession();
+  
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1]; // Extract locale from pathname
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -87,7 +87,7 @@ export default function SettingsPage() {
         
         <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
-            <Link href="/admin" style={{ marginRight: '1rem' }}>
+            <Link href={`/${locale}/admin`} style={{ marginRight: '1rem' }}>
               &larr; Back to Dashboard
             </Link>
             <h1>Account Settings</h1>

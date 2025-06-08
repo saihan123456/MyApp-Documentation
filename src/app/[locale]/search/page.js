@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/app/components/navbar';
 
 export default function SearchPage() {
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState([]);
@@ -84,7 +86,7 @@ export default function SearchPage() {
               >
                 <h2 style={{ marginBottom: '0.5rem' }}>
                   <Link 
-                    href={`/docs/${doc.slug}`}
+                    href={`/${locale}/docs/${doc.slug}`}
                     style={{ color: 'var(--primary-color)', textDecoration: 'none' }}
                   >
                     {doc.title}
@@ -102,7 +104,7 @@ export default function SearchPage() {
                 
                 <div style={{ marginTop: '1rem' }}>
                   <Link 
-                    href={`/docs/${doc.slug}`}
+                    href={`/${locale}/docs/${doc.slug}`}
                     style={{ 
                       color: 'var(--primary-color)',
                       fontWeight: 'bold',

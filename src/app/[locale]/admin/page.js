@@ -149,7 +149,7 @@ export default function AdminDashboard() {
               <AdminCard 
                 title="Create Document" 
                 description="Create a new documentation page"
-                link="/admin/new"
+                link={`/${locale}/admin/new`}
                 icon="📝"
               />
               

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import AuthCheck from '../../components/auth-check';
-import Navbar from '../../components/navbar';
+import AuthCheck from '@/app/components/auth-check';
+import Navbar from '@/app/components/navbar';
 import dynamic from 'next/dynamic';
 import { marked } from 'marked';
-import CustomModalPlugin from '../../components/custom-modal-plugin';
+import CustomModalPlugin from '@/app/components/custom-modal-plugin';
 
 // Import the editor dynamically to avoid SSR issues
 const MdEditor = dynamic(
@@ -24,6 +24,8 @@ import 'react-markdown-editor-lite/lib/index.css';
 
 export default function NewDocumentPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1];
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [slug, setSlug] = useState('');
@@ -72,7 +74,7 @@ export default function NewDocumentPage() {
       }
       
       // Redirect to admin dashboard
-      router.push('/admin');
+      router.push(`/${locale}/admin`);
       router.refresh();
     } catch (err) {
       console.error('Error creating document:', err);
@@ -192,7 +194,7 @@ export default function NewDocumentPage() {
                 {isSubmitting ? 'Creating...' : 'Create Document'}
               </button>
               
-              <Link href="/admin" className="btn btn-secondary">
+              <Link href={`/${locale}/admin`} className="btn btn-secondary">
                 Cancel
               </Link>
             </div>

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import Navbar from '@/app/components/navbar';
-import Link from 'next/link';
 import db from '@/app/lib/db';
 import { marked } from 'marked';
 import '@/app/styles/markdown.css';
