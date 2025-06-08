@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/app/components/navbar';
+import { useTranslations } from '@/app/translations/client';
 
 export default function SearchPage() {
   const pathname = usePathname();
@@ -13,6 +14,7 @@ export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const t = useTranslations(); // Get translations based on current locale
 
   useEffect(() => {
     async function fetchSearchResults() {
@@ -36,7 +38,7 @@ export default function SearchPage() {
         setLoading(false);
       } catch (err) {
         console.error('Error searching documents:', err);
-        setError('Failed to search documents. Please try again.');
+        setError(t.searchError);
         setLoading(false);
       }
     }
@@ -57,12 +59,12 @@ export default function SearchPage() {
       <Navbar />
       
       <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
-        <h1>Search Results</h1>
-        <p>Showing results for: <strong>{query}</strong></p>
+        <h1>{t.searchResults}</h1>
+        <p>{t.showingResultsFor} <strong>{query}</strong></p>
         
         {loading ? (
           <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-            <p>Searching documents...</p>
+            <p>{t.searchingDocuments}</p>
           </div>
         ) : error ? (
           <div style={{ padding: '1rem', backgroundColor: '#f8d7da', borderRadius: '4px', marginTop: '1rem' }}>
@@ -70,7 +72,7 @@ export default function SearchPage() {
           </div>
         ) : results.length === 0 ? (
           <div style={{ padding: '2rem 0' }}>
-            <p>No documents found matching your search.</p>
+            <p>{t.noResultsFound}</p>
           </div>
         ) : (
           <div style={{ marginTop: '2rem' }}>
@@ -111,7 +113,7 @@ export default function SearchPage() {
                       fontWeight: 'bold',
                     }}
                   >
-                    Read more →
+                    {t.readMore}
                   </Link>
                 </div>
               </div>

@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from '@/app/translations/client';
 
 export default function ResponsiveSidebar({ links, currentSlug }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const locale = pathname.split('/')[1];
+  const t = useTranslations();
 
   // Check if we're on a mobile device on component mount and window resize
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function ResponsiveSidebar({ links, currentSlug }) {
       {isMobile && (
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-label={isOpen ? t.responsiveSidebarCloseMenu : t.responsiveSidebarOpenMenu}
           style={{
             position: 'fixed',
             left: isOpen ? '260px' : '20px',
@@ -91,7 +93,7 @@ export default function ResponsiveSidebar({ links, currentSlug }) {
         overflowY: 'auto',
         maxHeight: isMobile ? 'calc(100vh - var(--navbar-height, 75px))' : 'none',
       }}>
-        <h3 style={{ marginBottom: '1rem' }}>Documentation</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{t.responsiveSidebarDocumentation}</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {links.map((link) => (
             <li key={link.slug} style={{ marginBottom: '0.75rem' }}>

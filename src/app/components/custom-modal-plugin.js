@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { PluginComponent } from 'react-markdown-editor-lite';
 import styles from './custom-modal-plugin.module.css';
 import Pagination from './pagination';
@@ -84,13 +84,13 @@ const ImageItem = ({ image, selected, onSelect, onDelete }) => {
 };
 
 // Image Gallery component
-const ImageGallery = ({ images, selectedImage, onSelectImage, onDeleteImage, loading }) => {
+const ImageGallery = ({ images, selectedImage, onSelectImage, onDeleteImage, loading, translations }) => {
   if (loading) {
-    return <div className={styles.loading}>Loading images...</div>;
+    return <div className={styles.loading}>{translations.customModalLoadingImages}</div>;
   }
   
   if (images.length === 0) {
-    return <div className={styles.noImages}>No images uploaded yet.</div>;
+    return <div className={styles.noImages}>{translations.customModalNoImagesUploaded}</div>;
   }
   
   return (
@@ -109,7 +109,7 @@ const ImageGallery = ({ images, selectedImage, onSelectImage, onDeleteImage, loa
 };
 
 // File Upload component
-const FileUpload = ({ onUpload, uploading }) => {
+const FileUpload = ({ onUpload, uploading, translations }) => {
   const fileInputRef = useRef(null);
   const [error, setError] = useState('');
   
@@ -118,7 +118,7 @@ const FileUpload = ({ onUpload, uploading }) => {
     if (files && files.length > 0) {
       // Check if the number of files exceeds the maximum limit
       if (files.length > 5) {
-        setError('You can only upload up to 5 files at once');
+        setError(translations.customModalMaxFilesError);
         // Reset the input value
         e.target.value = null;
         return;
@@ -156,9 +156,9 @@ const FileUpload = ({ onUpload, uploading }) => {
         onClick={handleUploadClick}
         disabled={uploading}
       >
-        {uploading ? 'Uploading...' : 'Upload Images (Max 5)'}
+        {uploading ? translations.customModalUploadingImages : translations.customModalUploadImages}
       </button>
-      <div className={styles.helpText}>Maximum 5 files per upload</div>
+      <div className={styles.helpText}>{translations.customModalMaxFilesPerUpload}</div>
     </div>
   );
 };
@@ -181,7 +181,8 @@ class CustomModalPlugin extends PluginComponent {
       uploading: false,
       error: null,
       page: 1,
-      totalPages: 1
+      totalPages: 1,
+      translations: null
     };
     
     this.handleClick = this.handleClick.bind(this);
@@ -200,7 +201,7 @@ class CustomModalPlugin extends PluginComponent {
       const response = await fetch(`/api/images?page=${this.state.page}&limit=12`);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch images');
+        throw new Error(this.state.translations?.customModalFailedToFetchImages || 'Failed to fetch images');
       }
       
       const data = await response.json();
@@ -229,7 +230,7 @@ class CustomModalPlugin extends PluginComponent {
       // Check if the number of files exceeds the maximum limit
       if (files.length > 5) {
         this.setState({
-          error: 'You can only upload up to 5 files at once',
+          error: this.state.translations?.customModalMaxFilesError || 'You can only upload up to 5 files at once',
           uploading: false
         });
         return;
@@ -246,7 +247,7 @@ class CustomModalPlugin extends PluginComponent {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to upload images');
+        throw new Error(this.state.translations?.customModalFailedToUploadImages || 'Failed to upload images');
       }
       
       // Refresh the image list after upload
@@ -262,7 +263,10 @@ class CustomModalPlugin extends PluginComponent {
   }
   
   async handleImageDelete(image) {
-    if (!confirm(`Are you sure you want to delete ${image.original_filename}?`)) {
+    const confirmMessage = this.state.translations?.customModalDeleteImageConfirm ? 
+      this.state.translations.customModalDeleteImageConfirm.replace('{0}', image.original_filename) : 
+      `Are you sure you want to delete ${image.original_filename}?`;
+    if (!confirm(confirmMessage)) {
       return;
     }
     
@@ -274,7 +278,7 @@ class CustomModalPlugin extends PluginComponent {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to delete image');
+        throw new Error(this.state.translations?.customModalFailedToDeleteImage || 'Failed to delete image');
       }
       
       // If the deleted image was selected, clear the selection
@@ -308,7 +312,36 @@ class CustomModalPlugin extends PluginComponent {
   }
   
   handleClick() {
-    this.setState({ isModalOpen: true }, this.fetchImages);
+    // Get the current locale from the URL path
+    const locale = window.location.pathname.split('/')[1] || 'en';
+    
+    // Set modal to open first
+    this.setState({ isModalOpen: true });
+    
+    // Then fetch translations based on locale
+    if (locale === 'ja') {
+      // For Japanese
+      fetch('/api/translations?locale=ja')
+        .then(response => response.json())
+        .then(data => {
+          this.setState({ translations: data }, this.fetchImages);
+        })
+        .catch(error => {
+          console.error('Failed to load translations:', error);
+          this.fetchImages();
+        });
+    } else {
+      // For English (default)
+      fetch('/api/translations?locale=en')
+        .then(response => response.json())
+        .then(data => {
+          this.setState({ translations: data }, this.fetchImages);
+        })
+        .catch(error => {
+          console.error('Failed to load translations:', error);
+          this.fetchImages();
+        });
+    }
   }
   
   closeModal() {
@@ -322,7 +355,7 @@ class CustomModalPlugin extends PluginComponent {
       <>
         <span
           className="button button-type-modal"
-          title="Insert Image"
+          title={this.state.translations?.customModalInsertImage || "Insert Image"}
           onClick={this.handleClick}
           style={{ cursor: 'pointer' }}
         >
@@ -342,11 +375,11 @@ class CustomModalPlugin extends PluginComponent {
           {uploading && (
             <div className={styles.loadingOverlay}>
               <div className={styles.loadingSpinner}></div>
-              <div className={styles.loadingText}>Uploading images...</div>
+              <div className={styles.loadingText}>{this.state.translations?.customModalUploadingImages || "Uploading images..."}</div>
             </div>
           )}
           
-          <h4>Image Manager</h4>
+          <h4>{this.state.translations?.customModalImageManager || "Image Manager"}</h4>
           
           {error && (
             <div className={styles.error}>
@@ -357,6 +390,7 @@ class CustomModalPlugin extends PluginComponent {
           <FileUpload 
             onUpload={this.handleImageUpload}
             uploading={uploading}
+            translations={this.state.translations || {}}
           />
           
           <ImageGallery 
@@ -365,6 +399,7 @@ class CustomModalPlugin extends PluginComponent {
             onSelectImage={this.handleImageSelect}
             onDeleteImage={this.handleImageDelete}
             loading={loading}
+            translations={this.state.translations || {}}
           />
           
           {!loading && images.length > 0 && (
@@ -382,14 +417,14 @@ class CustomModalPlugin extends PluginComponent {
               onClick={this.insertSelectedImage}
               disabled={!selectedImage || uploading}
             >
-              Insert Selected Image
+              {this.state.translations?.customModalInsertSelectedImage || "Insert Selected Image"}
             </button>
             <button 
               className={styles.cancelButton}
               onClick={this.closeModal}
               disabled={uploading}
             >
-              Cancel
+              {this.state.translations?.customModalCancel || "Cancel"}
             </button>
           </div>
         </Modal>

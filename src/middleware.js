@@ -8,8 +8,22 @@ const supportedLocales = ['en', 'ja']; // Add all your supported locales here
 // Cookie name for language preference - must match the one in LanguageContext.js
 const LANGUAGE_COOKIE_NAME = 'preferred_language';
 
+// Common image file extensions to exclude from locale redirection
+const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.bmp', '.ico'];
+
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
+  
+  // Skip middleware for image files
+  if (imageExtensions.some(ext => pathname.toLowerCase().endsWith(ext))) {
+    return NextResponse.next();
+  }
+  
+  // Skip middleware for URLs that contain UUIDs (likely image files)
+  const uuidPattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+  if (uuidPattern.test(pathname)) {
+    return NextResponse.next();
+  }
   
   // Get the preferred language from cookie or use default
   const cookieLanguage = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value;
@@ -88,7 +102,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - uploads (user uploaded files)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|uploads).*)',
   ],
 };

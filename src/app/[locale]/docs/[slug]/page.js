@@ -5,6 +5,7 @@ import { marked } from 'marked';
 import '@/app/styles/markdown.css';
 import '@/app/styles/responsive.css';
 import ResponsiveSidebar from '@/app/components/responsive-sidebar';
+import { getTranslations } from '@/app/translations';
 
 // Configure marked options once at module level
 marked.setOptions({
@@ -58,6 +59,8 @@ export default async function DocumentPage({ params }) {
   // Properly await params before destructuring
   const resolvedParams = await Promise.resolve(params);
   const { slug, locale } = resolvedParams;
+  // Get translations for the current locale
+  const t = getTranslations(locale);
   const document = await getDocumentBySlug(slug, locale);
   
   if (!document) {
@@ -86,7 +89,7 @@ export default async function DocumentPage({ params }) {
               marginTop: '1rem',
               marginBottom: '2rem',
             }}>
-              <p>Last updated: {new Date(document.updated_at).toISOString().split('T')[0]}</p>
+              <p>{t.lastUpdated} {new Date(document.updated_at).toISOString().split('T')[0]}</p>
             </div>
             
             {/* Render the document content with markdown */}

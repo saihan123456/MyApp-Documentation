@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from '@/app/translations/client';
 
 export default function LoginPage() {
   // Extract the locale from pathname instead of params
@@ -16,6 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations(); // Get translations based on current locale
   
   // Get the callback URL from the URL parameters
   // If no callback URL is provided, default to the admin page with the current locale
@@ -34,7 +36,7 @@ export default function LoginPage() {
     e.preventDefault();
     
     if (!username || !password) {
-      setError('Username and password are required');
+      setError(t.fieldsRequired);
       return;
     }
     
@@ -49,7 +51,7 @@ export default function LoginPage() {
       });
       
       if (result.error) {
-        setError('Invalid username or password');
+        setError(t.invalidCredentials);
         setIsLoading(false);
         return;
       }
@@ -59,7 +61,7 @@ export default function LoginPage() {
       router.refresh();
     } catch (error) {
       console.error('Login error:', error);
-      setError('An error occurred during login');
+      setError(t.loginError);
       setIsLoading(false);
     }
   };
@@ -67,7 +69,7 @@ export default function LoginPage() {
   return (
     <div className="container">
       <div style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '24px' }}>Admin Login</h1>
+        <h1 style={{ textAlign: 'center', marginBottom: '24px' }}>{t.adminLogin}</h1>
         
         {error && (
           <div className="alert alert-danger">{error}</div>
@@ -75,7 +77,7 @@ export default function LoginPage() {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">{t.username}</label>
             <input
               id="username"
               type="text"
@@ -87,7 +89,7 @@ export default function LoginPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t.password}</label>
             <input
               id="password"
               type="password"
@@ -104,12 +106,12 @@ export default function LoginPage() {
             style={{ width: '100%', marginTop: '16px' }}
             disabled={isLoading}
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {isLoading ? t.loggingIn : t.login}
           </button>
         </form>
         
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <Link href="/">Back to Documentation</Link>
+          <Link href={`/${locale}`}>{t.backToDocumentation}</Link>
         </div>
       </div>
     </div>
