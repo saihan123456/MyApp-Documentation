@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import AuthCheck from '@/app/components/auth-check';
 import Navbar from '@/app/components/navbar';
+import { useTranslations } from '@/app/translations/client';
 import Link from 'next/link';
 
 export default function SettingsPage() {
-  
   const pathname = usePathname();
-  const locale = pathname.split('/')[1]; // Extract locale from pathname
+  const locale = pathname.split('/')[1]; 
+  const t = useTranslations(); 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,22 +27,26 @@ export default function SettingsPage() {
     
     // Validate input
     if (!currentPassword) {
-      setError('Current password is required');
+      setError(t.currentPasswordRequired);
+      setIsSubmitting(false);
       return;
     }
     
     if (!newPassword) {
-      setError('New password is required');
+      setError(t.newPasswordRequired);
+      setIsSubmitting(false);
       return;
     }
     
     if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters long');
+      setError(t.passwordMinLength);
+      setIsSubmitting(false);
       return;
     }
     
     if (newPassword !== confirmPassword) {
-      setError('New password and confirmation do not match');
+      setError(t.passwordsDoNotMatch);
+      setIsSubmitting(false);
       return;
     }
     
@@ -62,7 +67,7 @@ export default function SettingsPage() {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to reset password');
+        throw new Error(data.error || t.passwordUpdateFailed);
       }
       
       // Clear form
@@ -71,10 +76,10 @@ export default function SettingsPage() {
       setConfirmPassword('');
       
       // Show success message
-      setSuccess(data.message || 'Password updated successfully');
+      setSuccess(t.passwordUpdateSuccess);
     } catch (err) {
       console.error('Password reset error:', err);
-      setError(err.message || 'An error occurred while resetting password');
+      setError(err.message || t.passwordUpdateFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -88,14 +93,14 @@ export default function SettingsPage() {
         <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
             <Link href={`/${locale}/admin`} style={{ marginRight: '1rem' }}>
-              &larr; Back to Dashboard
+              &larr; {t.backToDashboard}
             </Link>
-            <h1>Account Settings</h1>
+            <h1>{t.accountSettingsTitle}</h1>
           </div>
           
           <div style={{ maxWidth: '600px' }}>
             <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-              <h2>Reset Password</h2>
+              <h2>{t.resetPassword}</h2>
               
               {error && (
                 <div className="alert alert-danger" style={{ marginBottom: '1rem' }}>
@@ -111,7 +116,7 @@ export default function SettingsPage() {
               
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label htmlFor="currentPassword">Current Password</label>
+                  <label htmlFor="currentPassword">{t.currentPassword}</label>
                   <input
                     id="currentPassword"
                     type="password"
@@ -124,7 +129,7 @@ export default function SettingsPage() {
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="newPassword">New Password</label>
+                  <label htmlFor="newPassword">{t.newPassword}</label>
                   <input
                     id="newPassword"
                     type="password"
@@ -136,12 +141,12 @@ export default function SettingsPage() {
                     required
                   />
                   <small className="form-text text-muted">
-                    Password must be at least 8 characters long
+                    {t.passwordRequirements}
                   </small>
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="confirmPassword">Confirm New Password</label>
+                  <label htmlFor="confirmPassword">{t.confirmNewPassword}</label>
                   <input
                     id="confirmPassword"
                     type="password"
@@ -159,7 +164,7 @@ export default function SettingsPage() {
                   style={{ marginTop: '1rem' }}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Updating...' : 'Update Password'}
+                  {isSubmitting ? t.updating : t.updatePassword}
                 </button>
               </form>
             </div>

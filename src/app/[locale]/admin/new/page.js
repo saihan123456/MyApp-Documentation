@@ -8,6 +8,7 @@ import Navbar from '@/app/components/navbar';
 import dynamic from 'next/dynamic';
 import { marked } from 'marked';
 import CustomModalPlugin from '@/app/components/custom-modal-plugin';
+import { useTranslations } from '@/app/translations/client';
 
 // Import the editor dynamically to avoid SSR issues
 const MdEditor = dynamic(
@@ -26,6 +27,7 @@ export default function NewDocumentPage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname.split('/')[1];
+  const t = useTranslations();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [slug, setSlug] = useState('');
@@ -47,7 +49,7 @@ export default function NewDocumentPage() {
     e.preventDefault();
     
     if (!title || !content || !slug) {
-      setError('All fields are required');
+      setError(t.allFieldsRequired);
       return;
     }
     
@@ -71,7 +73,7 @@ export default function NewDocumentPage() {
       
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to create document');
+        throw new Error(data.error || t.failedToCreateDocument);
       }
       
       // Redirect to admin dashboard
@@ -79,7 +81,7 @@ export default function NewDocumentPage() {
       router.refresh();
     } catch (err) {
       console.error('Error creating document:', err);
-      setError(err.message || 'Failed to create document');
+      setError(err.message || t.failedToCreateDocument);
       setIsSubmitting(false);
     }
   };
@@ -108,7 +110,7 @@ export default function NewDocumentPage() {
         <Navbar />
         
         <div className="container" style={{ padding: '0.5rem 0', paddingTop: 'var(--navbar-height, 75px)', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
-          <h3>Create New Document</h3>
+          <h3>{t.createNewDocumentTitle}</h3>
           
           {error && (
             <div className="alert alert-danger" style={{ marginTop: '0.5rem' }}>
@@ -125,7 +127,7 @@ export default function NewDocumentPage() {
               marginBottom: '2px'
             }}>
               <div className="form-group" style={{ flex: '1', minWidth: '250px' }}>
-                <label htmlFor="title">Title</label>
+                <label htmlFor="title">{t.title}</label>
                 <input
                   id="title"
                   type="text"
@@ -138,7 +140,7 @@ export default function NewDocumentPage() {
               </div>
               
               <div className="form-group" style={{ flex: '1', minWidth: '250px' }}>
-                <label htmlFor="slug">Slug</label>
+                <label htmlFor="slug">{t.slug}</label>
                 <input
                   id="slug"
                   type="text"
@@ -149,13 +151,13 @@ export default function NewDocumentPage() {
                   required
                 />
                 <small style={{ color: 'var(--dark-gray)' }}>
-                  This will be the URL path: /docs/{slug}
+                  {t.urlPath} {slug}
                 </small>
               </div>
             </div>
             
             <div className="form-group" style={{ marginTop: '0px' }}>
-              <label htmlFor="content">Content</label>
+              <label htmlFor="content">{t.content}</label>
               <MdEditor
                 id="content"
                 style={{ 
@@ -168,10 +170,10 @@ export default function NewDocumentPage() {
                 renderHTML={renderHTML}
                 onChange={handleEditorChange}
                 disabled={isSubmitting}
-                placeholder="Write your content here..."
+                placeholder={t.writeContentHere}
               />
               <small style={{ color: 'var(--dark-gray)' }}>
-                Supports Markdown formatting
+                {t.markdownSupport}
               </small>
             </div>
             
@@ -183,7 +185,7 @@ export default function NewDocumentPage() {
                 onChange={(e) => setPublished(e.target.checked)}
                 disabled={isSubmitting}
               />
-              <label htmlFor="published">Publish immediately</label>
+              <label htmlFor="published">{t.publishImmediately}</label>
             </div>
             
             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
@@ -192,11 +194,11 @@ export default function NewDocumentPage() {
                 className="btn"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Creating...' : 'Create Document'}
+                {isSubmitting ? t.creating : t.createDocument}
               </button>
               
               <Link href={`/${locale}/admin`} className="btn btn-secondary">
-                Cancel
+                {t.cancel}
               </Link>
             </div>
           </form>

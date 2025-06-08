@@ -7,6 +7,7 @@ import AuthCheck from '@/app/components/auth-check';
 import Navbar from '@/app/components/navbar';
 import Link from 'next/link';
 import Pagination from '@/app/components/pagination';
+import { useTranslations } from '@/app/translations/client';
 
 export default function AdminDashboard() {
   // Extract the locale from pathname instead of params
@@ -14,6 +15,7 @@ export default function AdminDashboard() {
   const locale = pathname.split('/')[1]; // Gets the first segment after the leading slash
   const router = useRouter();
   const { data: session } = useSession();
+  const t = useTranslations();
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -81,7 +83,7 @@ export default function AdminDashboard() {
   
   // Handle document deletion
   const handleDelete = async (id) => {
-    if (confirm('Are you sure you want to delete this document?')) {
+    if (confirm(t.confirmDelete)) {
       try {
         setIsDeleting(true);
         
@@ -97,7 +99,7 @@ export default function AdminDashboard() {
         setDocuments(documents.filter(doc => doc.id !== id));
         
         // Refresh document counts
-        const countResponse = await fetch('/api/documents/count');
+        const countResponse = await fetch(`/api/documents/count?language=${locale}`);
         if (countResponse.ok) {
           const countData = await countResponse.json();
           setPublishedCount(countData.published || 0);
@@ -116,7 +118,7 @@ export default function AdminDashboard() {
         }
       } catch (err) {
         console.error('Error deleting document:', err);
-        setError('Failed to delete document');
+        setError(t.failedToDeleteDocument);
         setIsDeleting(false);
       }
     }
@@ -137,8 +139,8 @@ export default function AdminDashboard() {
         <Navbar />
         
         <div className="container" style={{ padding: '2rem 0', paddingTop: 'var(--navbar-height, 70px)' }}>
-          <h1>Admin Dashboard</h1>
-          <p>Welcome, {session?.user?.name || session?.user?.username || 'Admin'}</p>
+          <h1>{t.adminDashboard}</h1>
+          <p>{t.welcome} {session?.user?.name || session?.user?.username || 'Admin'}</p>
           
           <div style={{ marginTop: '2rem' }}>
             
@@ -149,29 +151,29 @@ export default function AdminDashboard() {
               marginTop: '1rem' 
             }}>
               <AdminCard 
-                title="Create Document" 
-                description="Create a new documentation page"
+                title={t.createDocument}
+                description={t.createDocumentDesc}
                 link={`/${locale}/admin/new`}
                 icon="📝"
               />
               
               <AdminCard 
-                title="Published Documents" 
+                title={t.publishedDocuments}
                 description={`${publishedCount} document${publishedCount !== 1 ? 's' : ''}`}
                 icon="✅"
                 isCount={true}
               />
               
               <AdminCard 
-                title="Unpublished Documents" 
+                title={t.unpublishedDocuments}
                 description={`${unpublishedCount} document${unpublishedCount !== 1 ? 's' : ''}`}
                 icon="📋"
                 isCount={true}
               />
               
               <AdminCard 
-                title="Account Settings" 
-                description="Manage your account and reset password"
+                title={t.accountSettings}
+                description={t.accountSettingsDesc}
                 link={`/${locale}/admin/settings`}
                 icon="🔒"
               />
@@ -180,14 +182,14 @@ export default function AdminDashboard() {
           
           <div style={{ marginTop: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h2>Documents</h2>
+              <h2>{t.documents}</h2>
               <Link href={`/${locale}/admin/new`} className="btn">
-                Create New Document
+                {t.createNewDocument}
               </Link>
             </div>
             
             {isLoading ? (
-              <p>Loading documents...</p>
+              <p>{t.loadingDocuments}</p>
             ) : error ? (
               <div className="alert alert-danger">{error}</div>
             ) : (
@@ -196,17 +198,17 @@ export default function AdminDashboard() {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ backgroundColor: 'var(--light-gray)' }}>
-                        <th style={{ padding: '12px 16px', textAlign: 'left' }}>Title</th>
-                        <th style={{ padding: '12px 16px', textAlign: 'left' }}>Slug</th>
-                        <th style={{ padding: '12px 16px', textAlign: 'center' }}>Status</th>
-                        <th style={{ padding: '12px 16px', textAlign: 'center' }}>Actions</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'left' }}>{t.title}</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'left' }}>{t.slug}</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center' }}>{t.status}</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center' }}>{t.actions}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {documents.length === 0 ? (
                         <tr>
                           <td colSpan="4" style={{ padding: '16px', textAlign: 'center' }}>
-                            No documents found. Create your first document.
+                            {t.noDocumentsFound}
                           </td>
                         </tr>
                       ) : (
@@ -223,7 +225,7 @@ export default function AdminDashboard() {
                                 backgroundColor: doc.published ? '#d4edda' : '#f8d7da',
                                 color: doc.published ? '#155724' : '#721c24',
                               }}>
-                                {doc.published ? 'Published' : 'Draft'}
+                                {doc.published ? t.published : t.draft}
                               </span>
                             </td>
                             <td style={{ padding: '12px 16px', textAlign: 'center' }}>
@@ -232,7 +234,7 @@ export default function AdminDashboard() {
                                   color: 'var(--primary-color)',
                                   textDecoration: 'none',
                                 }}>
-                                  Edit
+                                  {t.edit}
                                 </Link>
                                 <button
                                   onClick={() => handleDelete(doc.id)}
@@ -245,7 +247,7 @@ export default function AdminDashboard() {
                                     opacity: isDeleting ? 0.7 : 1,
                                   }}
                                 >
-                                  {isDeleting ? 'Deleting...' : 'Delete'}
+                                  {isDeleting ? t.deleting : t.delete}
                                 </button>
                               </div>
                             </td>

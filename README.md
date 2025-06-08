@@ -15,6 +15,7 @@ This is a simple fullstack documentation management app created with Next.js and
 - **Server-Side Rendering** - For better SEO performance
 - **Admin Password Reset** - Enhanced security features
 - **Self-Contained** - No fancy cloud services connectivity required
+- **Multilingual Support** - Full internationalization with English and Japanese language options
 
 ## Tech Stack
 
@@ -23,9 +24,16 @@ This is a simple fullstack documentation management app created with Next.js and
 - **NextAuth.js** - Authentication solution
 - **react-markdown-editor-lite** - WYSIWYG markdown editor
 
-## Coming Features
+## Language Support
 
-- **Multi-language Selection** - Support for multiple languages
+The application supports multiple languages with a complete internationalization system:
+
+- **English** - Default language
+- **Japanese** - Full translation support
+- **Language Switching** - Users can switch languages via the navbar
+- **Locale-Based URLs** - All routes include language prefixes (e.g., `/en/docs`, `/ja/admin`)
+- **Persistent Language Preferences** - User language choices are saved in cookies
+- **Locale-Specific Content** - Documents are filtered by language
 
 
 ## Getting Started
@@ -126,6 +134,11 @@ Here are some screenshots of the application:
 ![Account Settings](/docs/images/account-settings.jpg)
 *Account Settings interface*
 
+![Japanese Dashboard](/docs/images/jp1.jpg)
+*Japanese Admin Dashboard view showing document list*
+
+![Jp document detail](/docs/images/jp2.jpg)
+*Japanese Document detail view*
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 

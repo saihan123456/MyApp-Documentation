@@ -6,6 +6,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { marked } from 'marked';
 import CustomModalPlugin from '@/app/components/custom-modal-plugin';
+import { useTranslations } from '@/app/translations/client';
 
 // Import the editor dynamically to avoid SSR issues
 const MdEditor = dynamic(
@@ -20,11 +21,10 @@ const MdEditor = dynamic(
 // Import the editor styles
 import 'react-markdown-editor-lite/lib/index.css';
 
-export default function EditDocumentForm({ documentId }) {
+export default function EditDocumentForm({ id, locale }) {
   const router = useRouter();
   const pathname = usePathname();
-  const locale = pathname.split('/')[1];
-  const id = documentId;
+  const t = useTranslations();
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -56,7 +56,7 @@ export default function EditDocumentForm({ documentId }) {
         setIsLoading(false);
       } catch (err) {
         console.error('Error fetching document:', err);
-        setError('Failed to load document');
+        setError(t.loadingDocument);
         setIsLoading(false);
       }
     }
@@ -78,7 +78,7 @@ export default function EditDocumentForm({ documentId }) {
     e.preventDefault();
     
     if (!title || !content || !slug) {
-      setError('All fields are required');
+      setError(t.allFieldsRequired);
       return;
     }
     
@@ -101,7 +101,7 @@ export default function EditDocumentForm({ documentId }) {
       
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to update document');
+        throw new Error(data.error || t.failedToUpdateDocument);
       }
       
       // Redirect to admin dashboard
@@ -109,7 +109,7 @@ export default function EditDocumentForm({ documentId }) {
       router.refresh();
     } catch (err) {
       console.error('Error updating document:', err);
-      setError(err.message || 'Failed to update document');
+      setError(err.message || t.failedToUpdateDocument);
       setIsSubmitting(false);
     }
   };
@@ -141,7 +141,7 @@ export default function EditDocumentForm({ documentId }) {
       )}
       
       {isLoading ? (
-        <p>Loading document...</p>
+        <p>{t.loadingDocument}</p>
       ) : (
         <form onSubmit={handleSubmit} style={{ marginTop: '0.5rem' }}>
           <div style={{ 
@@ -152,7 +152,7 @@ export default function EditDocumentForm({ documentId }) {
             marginBottom: '8px'
           }}>
             <div className="form-group" style={{ flex: '1', minWidth: '250px' }}>
-              <label htmlFor="title">Title</label>
+              <label htmlFor="title">{t.title}</label>
               <input
                 id="title"
                 type="text"
@@ -165,7 +165,7 @@ export default function EditDocumentForm({ documentId }) {
             </div>
             
             <div className="form-group" style={{ flex: '1', minWidth: '250px' }}>
-              <label htmlFor="slug">Slug</label>
+              <label htmlFor="slug">{t.slug}</label>
               <input
                 id="slug"
                 type="text"
@@ -176,13 +176,13 @@ export default function EditDocumentForm({ documentId }) {
                 required
               />
               <small style={{ color: 'var(--dark-gray)' }}>
-                This will be the URL path: /docs/{slug}
+                {t.urlPath} {slug}
               </small>
             </div>
           </div>
           
           <div className="form-group" style={{ marginTop: '0px' }}>
-            <label htmlFor="content">Content</label>
+            <label htmlFor="content">{t.content}</label>
             <MdEditor
               id="content"
               style={{ 
@@ -195,10 +195,10 @@ export default function EditDocumentForm({ documentId }) {
               renderHTML={renderHTML}
               onChange={handleEditorChange}
               disabled={isSubmitting}
-              placeholder="Write your content here..."
+              placeholder={t.writeContentHere}
             />
             <small style={{ color: 'var(--dark-gray)' }}>
-              Supports Markdown formatting
+              {t.markdownSupport}
             </small>
           </div>
           
@@ -210,7 +210,7 @@ export default function EditDocumentForm({ documentId }) {
               onChange={(e) => setPublished(e.target.checked)}
               disabled={isSubmitting}
             />
-            <label htmlFor="published">Published</label>
+            <label htmlFor="published">{t.published}</label>
           </div>
           
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
@@ -219,11 +219,11 @@ export default function EditDocumentForm({ documentId }) {
               className="btn"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? t.saving : t.saveChanges}
             </button>
             
             <Link href={`/${locale}/admin`} className="btn btn-secondary">
-              Cancel
+              {t.cancel}
             </Link>
           </div>
         </form>
