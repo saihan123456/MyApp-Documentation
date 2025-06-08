@@ -65,6 +65,7 @@ export default function NewDocumentPage() {
           content,
           slug,
           published,
+          language: locale // Include the locale/language
         }),
       });
       

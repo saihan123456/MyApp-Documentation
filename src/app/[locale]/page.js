@@ -2,10 +2,10 @@ import Link from 'next/link';
 import Navbar from '@/app/components/navbar';
 import db from '@/app/lib/db';
 
-// Function to fetch the first three documents from the database
-async function getTopThreeDocuments() {
+// Function to fetch the first three documents from the database for a specific locale
+async function getTopThreeDocuments(locale) {
   try {
-    return db.prepare('SELECT title, slug, content FROM docs WHERE published = 1 ORDER BY created_at ASC LIMIT 3').all();
+    return db.prepare('SELECT title, slug, content FROM docs WHERE published = 1 AND language = ? ORDER BY created_at ASC LIMIT 3').all(locale);
   } catch (error) {
     console.error('Error fetching documents:', error);
     return [];
@@ -15,8 +15,8 @@ async function getTopThreeDocuments() {
 export default async function Home({ params }) {
   // Extract the locale from params
   const { locale } = await params;
-  // Fetch the first three documents from the database
-  const documentSections = await getTopThreeDocuments();
+  // Fetch the first three documents from the database for this locale
+  const documentSections = await getTopThreeDocuments(locale);
   
   // If no documents are found, provide a fallback
   if (documentSections.length === 0) {
@@ -77,7 +77,7 @@ export default async function Home({ params }) {
             Comprehensive guides, API references, and examples to help you with the usage of MyApp.
           </p>
           <div style={{ marginTop: '2rem' }}>
-            <Link href={`/${locale}/docs/getting-started`} className="btn">
+            <Link href={`/${locale}/docs/`} className="btn">
               Get Started
             </Link>
           </div>

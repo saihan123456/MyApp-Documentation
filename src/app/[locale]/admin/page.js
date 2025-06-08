@@ -28,7 +28,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchDocumentCounts() {
       try {
-        const response = await fetch('/api/documents/count');
+        // Include the current locale as a filter parameter
+        const response = await fetch(`/api/documents/count?language=${locale}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch document counts');
@@ -44,7 +45,7 @@ export default function AdminDashboard() {
     }
     
     fetchDocumentCounts();
-  }, []);
+  }, [locale]);
   
   // Fetch documents for the current page
   useEffect(() => {
@@ -52,7 +53,8 @@ export default function AdminDashboard() {
       try {
         setIsLoading(true);
         
-        const response = await fetch(`/api/documents?page=${currentPage}&limit=${documentsPerPage}`);
+        // Include the current locale as a filter parameter
+        const response = await fetch(`/api/documents?page=${currentPage}&limit=${documentsPerPage}&language=${locale}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch documents');
@@ -75,7 +77,7 @@ export default function AdminDashboard() {
     }
     
     fetchPageDocuments();
-  }, [currentPage, documentsPerPage]);
+  }, [currentPage, documentsPerPage, locale]);
   
   // Handle document deletion
   const handleDelete = async (id) => {

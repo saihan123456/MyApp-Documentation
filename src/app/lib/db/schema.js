@@ -19,6 +19,7 @@ const Schema = {
       content TEXT NOT NULL,
       slug TEXT UNIQUE NOT NULL,
       published BOOLEAN DEFAULT true,
+      language TEXT NOT NULL DEFAULT 'en',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )

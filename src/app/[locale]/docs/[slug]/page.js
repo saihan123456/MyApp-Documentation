@@ -21,28 +21,33 @@ marked.setOptions({
 // This function generates static params for all published documents
 export async function generateStaticParams() {
   try {
-    const docs = db.prepare('SELECT slug FROM docs WHERE published = 1').all();
-    return docs.map(doc => ({ slug: doc.slug }));
+    // Get all published documents with their language
+    const docs = db.prepare('SELECT slug, language FROM docs WHERE published = 1').all();
+    // Return both slug and locale for each document
+    return docs.map(doc => ({ 
+      slug: doc.slug,
+      locale: doc.language 
+    }));
   } catch (error) {
     console.error('Error generating static params:', error);
     return [];
   }
 }
 
-// This function fetches the document data
-async function getDocumentBySlug(slug) {
+// This function fetches the document data for a specific locale
+async function getDocumentBySlug(slug, locale) {
   try {
-    return db.prepare('SELECT * FROM docs WHERE slug = ? AND published = 1').get(slug);
+    return db.prepare('SELECT * FROM docs WHERE slug = ? AND language = ? AND published = 1').get(slug, locale);
   } catch (error) {
     console.error('Error fetching document:', error);
     return null;
   }
 }
 
-// This function fetches all published documents for the sidebar
-async function getAllPublishedDocuments() {
+// This function fetches all published documents for the sidebar for a specific locale
+async function getAllPublishedDocuments(locale) {
   try {
-    return db.prepare('SELECT title, slug FROM docs WHERE published = 1 ORDER BY created_at ASC').all();
+    return db.prepare('SELECT title, slug FROM docs WHERE published = 1 AND language = ? ORDER BY created_at ASC').all(locale);
   } catch (error) {
     console.error('Error fetching all documents:', error);
     return [];
@@ -52,15 +57,15 @@ async function getAllPublishedDocuments() {
 export default async function DocumentPage({ params }) {
   // Properly await params before destructuring
   const resolvedParams = await Promise.resolve(params);
-  const { slug } = resolvedParams;
-  const document = await getDocumentBySlug(slug);
+  const { slug, locale } = resolvedParams;
+  const document = await getDocumentBySlug(slug, locale);
   
   if (!document) {
     notFound();
   }
   
-  // Fetch all published documents for the sidebar
-  const sidebarLinks = await getAllPublishedDocuments();
+  // Fetch all published documents for the sidebar for this locale
+  const sidebarLinks = await getAllPublishedDocuments(locale);
 
   return (
     <div>

@@ -8,6 +8,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const publishedOnly = searchParams.get('publishedOnly') === 'true';
+    const language = searchParams.get('language'); // Get language filter from query params
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '15');
     
@@ -22,24 +23,37 @@ export async function GET(request) {
     const offset = (page - 1) * limit;
     
     // Build the base query
-    let whereClause = '';
+    let whereConditions = [];
+    let queryParams = [];
+    
     if (publishedOnly) {
-      whereClause = ' WHERE published = 1';
+      whereConditions.push('published = 1');
     }
+    
+    // Add language filter if provided
+    if (language) {
+      whereConditions.push('language = ?');
+      queryParams.push(language);
+    }
+    
+    // Construct the WHERE clause
+    let whereClause = whereConditions.length > 0 ? ' WHERE ' + whereConditions.join(' AND ') : '';
     
     // Get total count for pagination
     const countQuery = `SELECT COUNT(*) as total FROM docs${whereClause}`;
-    const { total } = db.prepare(countQuery).get();
+    const { total } = db.prepare(countQuery).get(...queryParams);
     
     // Get paginated documents
     const query = `
-      SELECT id, title, slug, published, created_at, updated_at 
+      SELECT id, title, slug, published, language, created_at, updated_at 
       FROM docs${whereClause}
       ORDER BY created_at DESC
       LIMIT ? OFFSET ?
     `;
     
-    const documents = db.prepare(query).all(limit, offset);
+    // Add pagination params to the query params array
+    const allParams = [...queryParams, limit, offset];
+    const documents = db.prepare(query).all(...allParams);
     
     return NextResponse.json({
       documents,
@@ -71,7 +85,7 @@ export async function POST(request) {
     }
     
     const body = await request.json();
-    const { title, content, slug, published = true } = body;
+    const { title, content, slug, published = true, language = 'en' } = body;
     
     if (!title || !content || !slug) {
       return NextResponse.json(
@@ -92,11 +106,11 @@ export async function POST(request) {
     
     // Insert the document
     const result = db.prepare(
-      'INSERT INTO docs (title, content, slug, published) VALUES (?, ?, ?, ?)'
-    ).run(title, content, slug, published ? 1 : 0);
+      'INSERT INTO docs (title, content, slug, published, language) VALUES (?, ?, ?, ?, ?)'
+    ).run(title, content, slug, published ? 1 : 0, language);
     
     // Get the inserted document
-    const newDoc = db.prepare('SELECT id, title, slug, published, created_at, updated_at FROM docs WHERE id = ?').get(result.lastInsertRowid);
+    const newDoc = db.prepare('SELECT id, title, slug, published, language, created_at, updated_at FROM docs WHERE id = ?').get(result.lastInsertRowid);
     
     return NextResponse.json(newDoc, { status: 201 });
   } catch (error) {

@@ -2,15 +2,29 @@ import { NextResponse } from 'next/server';
 import db from '@/app/lib/db';
 
 // GET /api/documents/count - Get document counts
-export async function GET() {
+export async function GET(request) {
+  // Get language from query params if available
+  const { searchParams } = new URL(request.url);
+  const language = searchParams.get('language');
   try {
-    // Get total count
-    const totalQuery = 'SELECT COUNT(*) as count FROM docs';
-    const totalResult = db.prepare(totalQuery).get();
+    // Build language filter clause if needed
+    let languageFilter = '';
+    let queryParams = [];
     
-    // Get published count
-    const publishedQuery = 'SELECT COUNT(*) as count FROM docs WHERE published = 1';
-    const publishedResult = db.prepare(publishedQuery).get();
+    if (language) {
+      languageFilter = ' WHERE language = ?';
+      queryParams.push(language);
+    }
+    
+    // Get total count with language filter
+    const totalQuery = `SELECT COUNT(*) as count FROM docs${languageFilter}`;
+    const totalResult = db.prepare(totalQuery).get(...queryParams);
+    
+    // Get published count with language filter
+    const publishedFilter = language ? ' WHERE published = 1 AND language = ?' : ' WHERE published = 1';
+    const publishedParams = language ? [language] : [];
+    const publishedQuery = `SELECT COUNT(*) as count FROM docs${publishedFilter}`;
+    const publishedResult = db.prepare(publishedQuery).get(...publishedParams);
     
     // Calculate unpublished count
     const total = totalResult.count;
