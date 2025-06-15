@@ -38,7 +38,7 @@ a:hover {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 90%;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -46,6 +46,7 @@ a:hover {
 /* Ensure container has proper padding on all devices */
 @media (max-width: 767px) {
   .container {
+    max-width: 97%;
     padding: 0 7px;
   }
 }
@@ -53,6 +54,7 @@ a:hover {
 /* Tablet padding */
 @media (min-width: 768px) and (max-width: 1023px) {
   .container {
+    max-width: 97%;
     padding: 0 7px;
   }
 }

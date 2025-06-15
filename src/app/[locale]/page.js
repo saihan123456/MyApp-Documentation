@@ -91,9 +91,10 @@ export default async function Home({ params }) {
           <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>{t.documentation}</h2>
           
           <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '2rem'
+            display: 'flex', 
+            flexWrap: 'wrap',
+            gap: '2rem',
+            justifyContent: 'center'
           }}>
             {processedDocuments.map((section) => (
               <div key={section.slug} style={{ 
@@ -101,6 +102,8 @@ export default async function Home({ params }) {
                 borderRadius: '8px',
                 padding: '1.5rem',
                 boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                width: '300px',
+                flex: '0 0 300px',
               }}>
                 <h3 style={{ marginBottom: '0.5rem' }}>{section.title}</h3>
                 <p style={{ color: 'var(--dark-gray)', marginBottom: '1rem' }}>
